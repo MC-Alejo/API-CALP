@@ -3,14 +3,13 @@ const { check } = require('express-validator');
 
 const { validarCampos, validarJWT, esEncargadoDeArea, esJefeDeMantenimiento } = require('../middlewares');
 
-const { crearSolicitud, rechazarSolicitud } = require('../controllers/solicitudes');
-const { existeEquipamientoPorId, existeSolicitudPorId } = require('../helpers');
+const { crearSolicitud, rechazarSolicitud, crearTarea } = require('../controllers/solicitudes');
+const { existeEquipamientoPorId, existeSolicitudPorId, existeEmpleadoPorId } = require('../helpers');
 
 
 const router = Router();
 
 // crear una solicitud
-//TODO: continuar con el endpoint
 router.post('/', [
     //VALIDACIONES DEL ENDPOINT
     validarJWT, // aca sale el id del usuario que esta haciendo la peticion
@@ -30,17 +29,43 @@ router.post('/', [
 ],
     crearSolicitud);
 
-
-router.delete('/:id', [ //rechazar solicitud
+//rechazar solicitud
+router.delete('/:id', [
     //VALIDACIONES DEL ENDPOINT
     validarJWT,
     esJefeDeMantenimiento,
+    check('id', 'El ID debe ser un numero').not().isEmpty(),
     check('id', 'El ID debe ser un numero').isNumeric(),
     check('id', 'El ID debe ser un numero').isInt(),
     check('id').custom(existeSolicitudPorId),
 
     validarCampos,
 ], rechazarSolicitud);
+
+//crear una tarea (solicitud aceptada)
+router.post('/:id', [
+    validarJWT,
+    esJefeDeMantenimiento,
+    check('id', 'El ID debe ser un numero').not().isEmpty(),
+    check('id', 'El ID debe ser un numero').isNumeric(),
+    check('id', 'El ID debe ser un numero').isInt(),
+    check('id').custom(existeSolicitudPorId),
+
+    check('prioridad', 'La prioridad es obligatoria').not().isEmpty(),
+    check('id_responsable', 'El id_responsable es obligatorio').not().isEmpty(),
+
+    //prioridad
+    check('prioridad', 'El ID debe ser un numero').isNumeric(),
+    check('prioridad', 'El ID debe ser un numero').isInt(),
+    check('prioridad', 'La prioridad debe ser un numero entre 1 y 3').isInt({ min: 1, max: 3 }), // 1 (alta), 2 (media), 3 (baja)
+
+    //id_responsable
+    check('id_responsable', 'El ID debe ser un numero').isNumeric(),
+    check('id_responsable', 'El ID debe ser un numero').isInt(),
+    check('id_responsable').custom(existeEmpleadoPorId),
+    validarCampos,
+], crearTarea);
+
 
 
 

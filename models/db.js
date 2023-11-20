@@ -154,7 +154,7 @@ class DataBase {
             return 'GO';
         }
 
-        const buscarJefe = 'SELECT * FROM jefe_deposito WHERE id_usuario = $1';
+        const buscarJefe = 'SELECT * FROM jefe_mantenimiento WHERE id_usuario = $1';
         const resp2 = await this.client.query(buscarJefe, values);
         if (resp2.rowCount > 0) {
             return 'JM';
@@ -577,20 +577,7 @@ class DataBase {
         const resp = await this.client.query(text, values);
         return resp.rows[0];
     }
-    /**
-     * CREATE TABLE solicitud (
-        id SERIAL PRIMARY KEY NOT NULL,
-        estado character varying(15) NOT NULL, -- puede ser pendiente, aceptada o rechazada
-        fecha date NOT NULL ,
-        descripcion character varying(250) NOT NULL,
-        id_equipamiento integer NOT NULL,
-        id_usuario uuid NOT NULL,
-        id_juez uuid, -- id que es el que acepta o no una solicitud
-        FOREIGN KEY (id_equipamiento) REFERENCES equipamiento(id),
-        FOREIGN KEY (id_usuario) REFERENCES usuario(id)
-        FOREIGN KEY (id_juez) REFERENCES usuario(id)
-    );
-     */
+
     async crearSolicitud(descripcion, id_equipamiento, id_usuario) {
         const text = 'INSERT INTO solicitud (estado, fecha, descripcion, id_equipamiento, id_usuario) VALUES ($1, CURRENT_DATE, $2, $3, $4) RETURNING *';
         const values = ['pendiente', descripcion, id_equipamiento, id_usuario];
@@ -616,7 +603,27 @@ class DataBase {
     }
 
     // Querys de las tareas:
+    /*
+    CREATE TABLE tarea (
 
+    estado character varying(15) NOT NULL,
+    fecha date NOT NULL,
+    descripcion character varying(250) NOT NULL,
+    prioridad integer NOT NULL,
+    id_solicitud integer NOT NULL,
+    id_responsable integer NOT NULL,
+--
+    FOREIGN KEY (id_solicitud) REFERENCES solicitud(id),
+    FOREIGN KEY (id_responsable) REFERENCES responsable(id)
+);
+    */
+    async crearTarea(estado, descripcion, prioridad, id_solicitud, id_responsable) {
+        const text = 'INSERT INTO tarea (estado, fecha, descripcion, prioridad, id_solicitud, id_responsable) VALUES ($1, CURRENT_DATE, $2, $3, $4, $5) RETURNING *';
+        const values = [estado, descripcion, prioridad, id_solicitud, id_responsable];
+
+        const resp = await this.client.query(text, values);
+        return resp.rows[0];
+    }
 
 }
 
