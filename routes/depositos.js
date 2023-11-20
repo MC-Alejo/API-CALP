@@ -11,7 +11,7 @@ const { crearDeposito, actualizarDeposito, agregarAInventario } = require('../co
 
 const router = Router();
 
-//TODO: DOCUMENTAR ESTO EN EL DRIVE
+
 // Crear Deposito
 router.post('/', [
     //VALIDACIONES DEL ENDPOINT

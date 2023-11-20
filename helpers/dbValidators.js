@@ -218,6 +218,21 @@ const existeInventarioPorId = async (id) => {
     return true;
 }
 
+// ---------------------  VALIDACIONES SOLICITUDES  --------------------------------
+const existeSolicitudPorId = async (id) => {
+    const db = new DataBase();
+    await db.connect();
+    const resp = await db.getSolicitudPorId(id);
+    if (!resp) {
+        await db.disconnect();
+        throw new Error(`No existe una solicitud con ese id`);
+    }
+    await db.disconnect();
+
+    return true;
+
+}
+
 
 module.exports = {
     areaYaAsignada,
@@ -233,6 +248,7 @@ module.exports = {
     existeNombreArea,
     existeNombreDeposito,
     existeSectorPorId,
+    existeSolicitudPorId,
     validarEmailExiste,
     validarIdUsuario,
 }

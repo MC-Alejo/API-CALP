@@ -569,11 +569,55 @@ class DataBase {
         return resp.rows[0];
     }
 
-
-
     // Querys de las solicitudes:
+    async getSolicitudPorId(id) {
+        const text = 'SELECT * FROM solicitud WHERE id = $1';
+        const values = [id];
+
+        const resp = await this.client.query(text, values);
+        return resp.rows[0];
+    }
+    /**
+     * CREATE TABLE solicitud (
+        id SERIAL PRIMARY KEY NOT NULL,
+        estado character varying(15) NOT NULL, -- puede ser pendiente, aceptada o rechazada
+        fecha date NOT NULL ,
+        descripcion character varying(250) NOT NULL,
+        id_equipamiento integer NOT NULL,
+        id_usuario uuid NOT NULL,
+        id_juez uuid, -- id que es el que acepta o no una solicitud
+        FOREIGN KEY (id_equipamiento) REFERENCES equipamiento(id),
+        FOREIGN KEY (id_usuario) REFERENCES usuario(id)
+        FOREIGN KEY (id_juez) REFERENCES usuario(id)
+    );
+     */
+    async crearSolicitud(descripcion, id_equipamiento, id_usuario) {
+        const text = 'INSERT INTO solicitud (estado, fecha, descripcion, id_equipamiento, id_usuario) VALUES ($1, CURRENT_DATE, $2, $3, $4) RETURNING *';
+        const values = ['pendiente', descripcion, id_equipamiento, id_usuario];
+
+        const resp = await this.client.query(text, values);
+        return resp.rows[0];
+    }
+
+    async modificarEstadoSolicitud(id, estado) {
+        const text = 'UPDATE solicitud SET estado = $1 WHERE id = $2 RETURNING *';
+        const values = [estado, id];
+
+        const resp = await this.client.query(text, values);
+        return resp.rows[0];
+    }
+
+    async setJuezSolicitud(id, id_juez) {
+        const text = 'UPDATE solicitud SET id_juez = $1 WHERE id = $2 RETURNING *';
+        const values = [id_juez, id];
+
+        const resp = await this.client.query(text, values);
+        return resp.rows[0];
+    }
 
     // Querys de las tareas:
+
+
 }
 
 module.exports = DataBase;

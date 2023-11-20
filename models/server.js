@@ -17,6 +17,7 @@ class Server {
             inventario: '/api/inventario',
             maquinaria: '/api/maquinaria',
             sectores: '/api/sectores',
+            solicitudes: '/api/solicitudes',
             uploads: '/api/uploads',
             usuarios: '/api/usuarios',
         }
@@ -50,6 +51,7 @@ class Server {
         this.app.use(this.paths.inventario, require('../routes/inventario'))
         this.app.use(this.paths.maquinaria, require('../routes/maquinaria'))
         this.app.use(this.paths.sectores, require('../routes/sectores'))
+        this.app.use(this.paths.solicitudes, require('../routes/solicitudes'))
         this.app.use(this.paths.usuarios, require('../routes/usuarios'))
         //this.app.use(this.paths.uploads, require('../routes/uploads'))
     }
