@@ -5,6 +5,10 @@ const actualizarTarea = async (req, res = response) => {
     const { id } = req.params;
     const { id_responsable, prioridad, descripcion = '' } = req.body;
 
+    if (!id_responsable && !prioridad && !descripcion) {
+        return res.status(400).json({ errors: [{ msg: 'Debe enviar al menos un campo para actualizar' }] })
+    }
+
     try {
         if (descripcion !== '') {
             if (descripcion.length < 10) {
