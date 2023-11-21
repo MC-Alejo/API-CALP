@@ -71,8 +71,36 @@ const finalizarTarea = async (req, res = response) => {
     }
 }
 
+const agregarInventarioATarea = async (req, res = response) => {
+    const { id } = req.params;
+    const { id_inventario, cantidad } = req.body;
+
+    try {
+        const db = new DataBase();
+        await db.connect();
+        const resp = await db.getInventarioEnTarea(id, id_inventario);
+        if (resp) {
+            await db.disconnect();
+            return res.status(400).json({ errors: [{ msg: 'Ya existe ese inventario en la tarea' }] })
+        }
+
+        const inventarioTarea = await db.agregarInventarioATarea(id, id_inventario, cantidad);
+        await db.disconnect();
+
+        return res.json({
+            msg: 'Inventario agregado correctamente',
+            inventarioTarea
+        })
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            msg: 'Error al agregar inventario a tarea'
+        })
+    }
+}
 
 module.exports = {
     actualizarTarea,
+    agregarInventarioATarea,
     finalizarTarea
 }

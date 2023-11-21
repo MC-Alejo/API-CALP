@@ -652,6 +652,22 @@ class DataBase {
         return resp.rows[0];
     }
 
+    async agregarInventarioATarea(id_tarea, id_inventario, cantidad) {
+        const text = 'INSERT INTO inv_tar (id_tarea, id_inventario, cantidad_usada) VALUES ($1, $2, $3) RETURNING *';
+        const values = [id_tarea, id_inventario, cantidad];
+
+        const resp = await this.client.query(text, values);
+        return resp.rows[0];
+    }
+
+    async getInventarioEnTarea(id_tarea, id_inventario) {
+        const text = 'SELECT * FROM inv_tar WHERE id_tarea = $1 AND id_inventario = $2';
+        const values = [id_tarea, id_inventario];
+
+        const resp = await this.client.query(text, values);
+        return resp.rows[0];
+    }
+
 }
 
 module.exports = DataBase;
