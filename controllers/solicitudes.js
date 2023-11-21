@@ -39,7 +39,7 @@ const rechazarSolicitud = async (req, res) => {
 
         await db.disconnect();
 
-        res.status(201).json({
+        res.status(200).json({
             msg: 'La solicitud se rechazo correctamente'
         });
     } catch (error) {
@@ -64,12 +64,12 @@ const crearTarea = async (req, res) => {
         await db.setJuezSolicitud(id, req.usuario.id);
 
         //creo la tarea en la bd
-        await db.crearTarea('en curso', descripcion, prioridad, id, id_responsable)
+        const tarea = await db.crearTarea('en curso', descripcion, prioridad, id, id_responsable)
 
         await db.disconnect();
 
         res.status(201).json({
-            msg: 'La solicitud se rechazo correctamente'
+            tarea
         });
     } catch (error) {
         console.log(error);

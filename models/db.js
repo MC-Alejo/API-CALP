@@ -603,20 +603,6 @@ class DataBase {
     }
 
     // Querys de las tareas:
-    /*
-    CREATE TABLE tarea (
-
-    estado character varying(15) NOT NULL,
-    fecha date NOT NULL,
-    descripcion character varying(250) NOT NULL,
-    prioridad integer NOT NULL,
-    id_solicitud integer NOT NULL,
-    id_responsable integer NOT NULL,
---
-    FOREIGN KEY (id_solicitud) REFERENCES solicitud(id),
-    FOREIGN KEY (id_responsable) REFERENCES responsable(id)
-);
-    */
     async crearTarea(estado, descripcion, prioridad, id_solicitud, id_responsable) {
         const text = 'INSERT INTO tarea (estado, fecha, descripcion, prioridad, id_solicitud, id_responsable) VALUES ($1, CURRENT_DATE, $2, $3, $4, $5) RETURNING *';
         const values = [estado, descripcion, prioridad, id_solicitud, id_responsable];

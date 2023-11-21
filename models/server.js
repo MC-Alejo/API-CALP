@@ -18,6 +18,7 @@ class Server {
             maquinaria: '/api/maquinaria',
             sectores: '/api/sectores',
             solicitudes: '/api/solicitudes',
+            tareas: '/api/tareas',
             uploads: '/api/uploads',
             usuarios: '/api/usuarios',
         }
