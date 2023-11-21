@@ -5,7 +5,7 @@ const { validarCampos, validarJWT, esJefeDeMantenimiento } = require('../middlew
 
 const { existeTareaPorId } = require('../helpers');
 
-const { actualizarTarea } = require('../controllers');
+const { actualizarTarea, finalizarTarea } = require('../controllers');
 
 const router = Router();
 
@@ -22,6 +22,15 @@ router.put('/:id', [
 ], actualizarTarea);
 
 //finalizar tarea
+router.patch('/:id', [
+    validarJWT,
+    esJefeDeMantenimiento,
+    check('id', 'El ID debe ser un numero').not().isEmpty(),
+    check('id', 'El ID debe ser un numero').isNumeric(),
+    check('id', 'El ID debe ser un numero').isInt(),
+    check('id').custom(existeTareaPorId),
 
+    validarCampos,
+], finalizarTarea);
 
 module.exports = router;

@@ -644,6 +644,14 @@ class DataBase {
         return resp.rows[0];
     }
 
+    async modificarEstadoTarea(id, estado) {
+        const text = 'UPDATE tarea SET estado = $1 WHERE id = $2 RETURNING *';
+        const values = [estado, id];
+
+        const resp = await this.client.query(text, values);
+        return resp.rows[0];
+    }
+
 }
 
 module.exports = DataBase;

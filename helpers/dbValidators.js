@@ -238,9 +238,9 @@ const existeTareaPorId = async (id) => {
     const db = new DataBase();
     await db.connect();
     const resp = await db.getTareaPorId(id);
-    if (!resp) {
+    if (!resp || resp.estado === 'finalizada') {
         await db.disconnect();
-        throw new Error(`No existe una tarea con ese id`);
+        throw new Error(`No existe una tarea con ese id o la tarea ya finalizo`);
     }
     await db.disconnect();
 

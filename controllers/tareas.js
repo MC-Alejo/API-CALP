@@ -53,7 +53,26 @@ const actualizarTarea = async (req, res = response) => {
     }
 }
 
+const finalizarTarea = async (req, res = response) => {
+    const { id } = req.params;
+    try {
+        const db = new DataBase();
+        await db.connect();
+        const tareaFinalizada = await db.modificarEstadoTarea(id, 'finalizada');
+        await db.disconnect();
+        return res.json({
+            msg: 'Tarea finalizada correctamente'
+        })
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            msg: 'Error al finalizar Tarea'
+        })
+    }
+}
+
 
 module.exports = {
-    actualizarTarea
+    actualizarTarea,
+    finalizarTarea
 }
