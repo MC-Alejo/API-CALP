@@ -611,6 +611,39 @@ class DataBase {
         return resp.rows[0];
     }
 
+    async getTareaPorId(id) {
+        const text = 'SELECT * FROM tarea WHERE id = $1';
+        const values = [id];
+
+        const resp = await this.client.query(text, values);
+        return resp.rows[0];
+    }
+
+    async actualizarTarea(id, { descripcion, prioridad, id_responsable }) {
+        const setDescripcion = 'UPDATE tarea SET descripcion = $1 WHERE id = $2';
+        const setPrioridad = 'UPDATE tarea SET prioridad = $1 WHERE id = $2';
+        const setIdResponsable = 'UPDATE tarea SET id_responsable = $1 WHERE id = $2';
+        const text = 'SELECT * FROM tarea WHERE id = $1';
+
+        if (descripcion) {
+            const values = [descripcion, id];
+            await this.client.query(setDescripcion, values);
+        }
+        if (prioridad) {
+            const values = [prioridad, id];
+            await this.client.query(setPrioridad, values);
+        }
+        if (id_responsable) {
+            const values = [id_responsable, id];
+            await this.client.query(setIdResponsable, values);
+        }
+
+        const values = [id];
+        const resp = await this.client.query(text, values);
+
+        return resp.rows[0];
+    }
+
 }
 
 module.exports = DataBase;

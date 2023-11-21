@@ -7,6 +7,7 @@ const login = require('./auth');
 const maquinaria = require('./maquinaria');
 const sectores = require('./sectores');
 const usuarios = require('./usuarios');
+const tareas = require('./tareas');
 
 
 
@@ -19,5 +20,6 @@ module.exports = {
     ...login,
     ...maquinaria,
     ...sectores,
+    ...tareas,
     ...usuarios,
 }

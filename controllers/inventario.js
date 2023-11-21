@@ -8,47 +8,37 @@ const actualizarInventario = async (req, res = response) => {
     if (nombre) {
         if (nombre.length < 3) {
             return res.status(400).json({
-                msg: 'El nombre debe tener al menos 3 caracteres'
+                errors: [{
+                    msg: 'El nombre debe tener al menos 3 caracteres'
+                }]
             })
         }
 
         if (nombre.length > 65) {
-            return res.status(400).json({
-                msg: 'El nombre no debe tener mas de 65 caracteres'
-            })
+            return res.status(400).json({ errors: [{ msg: 'El nombre no debe tener mas de 65 caracteres' }] })
         }
 
         if (!/^[a-zA-Z0-9 ]*$/.test(nombre)) {
-            return res.status(400).json({
-                msg: 'El nombre solo puede contener letras, numeros y espacios'
-            })
+            return res.status(400).json({ errors: [{ msg: 'El nombre solo puede contener letras, numeros y espacios' }] })
         }
     }
 
     if (stock) {
 
         if (isNaN(parseInt(stock))) {
-            return res.status(400).json({
-                msg: 'El stock debe ser un numero'
-            })
+            return res.status(400).json({ errors: [{ msg: 'El stock debe ser un numero' }] })
         }
         console.log(stock)
         if (parseInt(stock) < 0) {
-            return res.status(400).json({
-                msg: 'El stock no puede ser negativo'
-            })
+            return res.status(400).json({ errors: [{ msg: 'El stock no puede ser negativo' }] })
         }
 
         if (parseInt(stock) > 1000000) {
-            return res.status(400).json({
-                msg: 'El stock no puede ser mayor a 1 millon'
-            })
+            return res.status(400).json({ errors: [{ msg: 'El stock no puede ser mayor a 1 millon' }] })
         }
 
         if (!/^[0-9]*$/.test(parseInt(stock))) {
-            return res.status(400).json({
-                msg: 'El stock solo puede contener numeros'
-            })
+            return res.status(400).json({ errors: [{ msg: 'El stock solo puede contener numeros' }] })
         }
     }
 
@@ -61,9 +51,7 @@ const actualizarInventario = async (req, res = response) => {
 
             if (resp && resp.estado) {
                 await db.disconnect();
-                return res.status(400).json({
-                    msg: 'Ya existe un inventario con ese nombre'
-                })
+                return res.status(400).json({ errors: [{ msg: 'Ya existe un inventario con ese nombre' }] })
             }
 
         }
