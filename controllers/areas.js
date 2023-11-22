@@ -1,5 +1,99 @@
 const { DataBase } = require("../models");
 
+//todas las areas
+const obtenerAreas = async (req, res) => {
+    try {
+        const db = new DataBase();
+        await db.connect();
+        const areas = await db.getAreas();
+        await db.disconnect();
+        res.json({
+            areas
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            errors: [{
+                msg: 'Error al obtener las areas'
+            }]
+        });
+    }
+}
+
+//area por id
+const obtenerArea = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const db = new DataBase();
+        await db.connect();
+        const area = await db.getAreaPorId(id);
+        await db.disconnect();
+        res.json({
+            area: {
+                id: area.id,
+                nombre: area.nombre
+            }
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            errors: [{
+                msg: 'Error al obtener el area'
+            }]
+        });
+    }
+
+}
+
+// el area del EA
+const obtenerAreaPorIdUsuario = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const db = new DataBase();
+        await db.connect();
+        const areaEA = await db.getAreaDelUsuario(id);
+        if (!areaEA || areaEA.estado === false) return res.status(404).json({});
+        const { nombre } = await db.getAreaPorId(areaEA.id_area);
+        await db.disconnect();
+        res.json({
+            area: {
+                id: areaEA.id_area,
+                nombre
+            }
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            errors: [{
+                msg: 'Error al obtener el area'
+            }]
+        });
+    }
+
+}
+
+//sectores de un area
+const obtenerSectoresPorIdArea = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const db = new DataBase();
+        await db.connect();
+        const sectores = await db.getSectoresPorIdArea(id);
+        await db.disconnect();
+        res.json({
+            sectores
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            errors: [{
+                msg: 'Error al obtener los sectores'
+            }]
+        });
+    }
+
+}
+
 //Creo un area en la bd
 const crearArea = async (req, res) => {
     const { nombre } = req.body;
@@ -50,8 +144,6 @@ const eliminarArea = async (req, res) => {
 
         const db = new DataBase();
         await db.connect();
-
-        //const resp = await db.getSectoresPorIdArea(id)
 
         const encargado = await db.validarAreaDefinida(id)
         //Eliminar el area implica no solo cambiar el estado de true a false sino que:
@@ -109,8 +201,12 @@ const crearSector = async (req, res) => {
 
 
 module.exports = {
-    crearArea,
     actualizarNombreArea,
-    eliminarArea,
+    crearArea,
     crearSector,
+    eliminarArea,
+    obtenerArea,
+    obtenerAreaPorIdUsuario,
+    obtenerAreas,
+    obtenerSectoresPorIdArea,
 }

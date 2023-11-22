@@ -9,6 +9,8 @@ const { existeEquipamientoPorId, existeSolicitudPorId, existeEmpleadoPorId } = r
 
 const router = Router();
 
+// TODO: GETS
+
 // crear una solicitud
 router.post('/', [
     //VALIDACIONES DEL ENDPOINT

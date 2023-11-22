@@ -1,15 +1,42 @@
-const {Router} = require ('express');
+const { Router } = require('express');
 const { check } = require('express-validator');
 
 const { validarCampos, validarJWT, esJefeDeMantenimiento } = require('../middlewares');
 
-const { existeSectorPorId} = require('../helpers');
+const { existeSectorPorId } = require('../helpers');
 
-const { crearEquipamientoSector, actualizarSector, bajaSector } = require('../controllers');
+const { crearEquipamientoSector, actualizarSector, bajaSector, obtenerSectores, obtenerMaquinariasPorSector, obtenerSectorPorId } = require('../controllers');
 
 const router = Router();
 
-//Obtener los sectores:
+//Obtener todos los sectores
+router.get('/', [
+    //VALIDACIONES DEL ENDPOINT
+    validarJWT,
+    esJefeDeMantenimiento,
+    validarCampos
+], obtenerSectores);
+
+//obtener sector por id
+router.get('/:id', [
+    //VALIDACIONES DEL ENDPOINT
+    validarJWT,
+    esJefeDeMantenimiento,
+    check('id', 'El ID debe ser un numero').isNumeric(),
+    check('id', 'El ID debe ser un numero').isInt(),
+    check('id').custom(existeSectorPorId),
+    validarCampos
+], obtenerSectorPorId);
+
+//Obtener maquinarias de un sector
+router.get('/:id/maquinarias', [
+    //VALIDACIONES DEL ENDPOINT
+    validarJWT,
+    check('id', 'El ID debe ser un numero').isNumeric(),
+    check('id', 'El ID debe ser un numero').isInt(),
+    check('id').custom(existeSectorPorId),
+    validarCampos
+], obtenerMaquinariasPorSector);
 
 // Actualizar sector (nombre o area a la que pertenece)
 router.put('/:id', [
@@ -18,7 +45,7 @@ router.put('/:id', [
     esJefeDeMantenimiento,
     check('id', 'El ID debe ser un numero').isNumeric(),
     check('id', 'El ID debe ser un numero').isInt(),
-    check('id').custom( existeSectorPorId ),
+    check('id').custom(existeSectorPorId),
     validarCampos
 ], actualizarSector);
 
@@ -30,7 +57,7 @@ router.delete('/:id', [
     esJefeDeMantenimiento,
     check('id', 'El ID debe ser un numero').isNumeric(),
     check('id', 'El ID debe ser un numero').isInt(),
-    check('id').custom( existeSectorPorId ),
+    check('id').custom(existeSectorPorId),
     validarCampos
 ], bajaSector);
 
@@ -42,11 +69,11 @@ router.post('/:id', [
     esJefeDeMantenimiento,
     check('id', 'El ID debe ser un numero').isNumeric(),
     check('id', 'El ID debe ser un numero').isInt(),
-    check('id').custom( existeSectorPorId ),
+    check('id').custom(existeSectorPorId),
     //input de equipamiento
     check('nombre', 'El nombre es obligatorio').not().isEmpty(),
-    check('nombre', 'El nombre debe de tener mas de 3 caracteres').isLength({min: 3}),
-    check('nombre', 'El nombre puede tener hasta 65 caracteres').isLength({max: 65}),
+    check('nombre', 'El nombre debe de tener mas de 3 caracteres').isLength({ min: 3 }),
+    check('nombre', 'El nombre puede tener hasta 65 caracteres').isLength({ max: 65 }),
     validarCampos
 ], crearEquipamientoSector);
 

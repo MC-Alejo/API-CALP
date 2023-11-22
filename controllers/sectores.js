@@ -1,5 +1,72 @@
 const { DataBase } = require("../models");
 
+//Obtener todos los sectores
+const obtenerSectores = async (req, res) => {
+    try {
+        const db = new DataBase();
+        await db.connect();
+        const sectores = await db.getSectores();
+        await db.disconnect();
+        res.json({
+            sectores
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            errors: [{
+                msg: 'Error al obtener los sectores'
+            }]
+        });
+    }
+}
+
+//obtener sector por id
+const obtenerSectorPorId = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const db = new DataBase();
+        await db.connect();
+        const sector = await db.getSectorPorId(id);
+        await db.disconnect();
+        res.json({
+            sector: {
+                id: sector.id,
+                nombre: sector.nombre,
+                area: sector.id_area
+            }
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            errors: [{
+                msg: 'Error al obtener el sector'
+            }]
+        });
+    }
+
+}
+
+//obtener maquinarias de un sector
+const obtenerMaquinariasPorSector = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const db = new DataBase();
+        await db.connect();
+        const maquinarias = await db.getEquipamientosPorSector(id);
+        await db.disconnect();
+        res.json({
+            maquinarias
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            errors: [{
+                msg: 'Error al obtener las maquinarias'
+            }]
+        });
+    }
+}
+
 // Actualizar sector (nombre o area a la que pertenece)
 const actualizarSector = async (req, res) => {
     const { id } = req.params;
@@ -121,4 +188,7 @@ module.exports = {
     actualizarSector,
     bajaSector,
     crearEquipamientoSector,
+    obtenerMaquinariasPorSector,
+    obtenerSectores,
+    obtenerSectorPorId,
 }

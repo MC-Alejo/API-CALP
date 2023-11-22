@@ -11,6 +11,7 @@ const { crearDeposito, actualizarDeposito, agregarAInventario } = require('../co
 
 const router = Router();
 
+// TODO: GETS
 
 // Crear Deposito
 router.post('/', [

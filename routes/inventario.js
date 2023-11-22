@@ -11,7 +11,7 @@ const { actualizarInventario, eliminarInventario } = require('../controllers');
 
 const router = Router();
 
-
+// TODO: GETS
 // Actualizar Inventario
 router.put('/:id', [
     //VALIDACIONES DEL ENDPOINT

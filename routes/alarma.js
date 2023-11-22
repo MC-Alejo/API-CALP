@@ -6,11 +6,29 @@ const { validarCampos, validarJWT, esJefeDeMantenimiento } = require('../middlew
 
 const { existeAlarma } = require('../helpers');
 
-const { actualizarAlarmaMantenimiento, eliminarAlarmaMantenimiento } = require('../controllers');
+const { actualizarAlarmaMantenimiento, eliminarAlarmaMantenimiento, obtenerAlarmas, obtenerAlarmaPorId } = require('../controllers');
 
 
 const router = Router();
 
+//obtener todas las alarmas
+router.get('/', [
+    //VALIDACIONES DEL ENDPOINT
+    validarJWT,
+    esJefeDeMantenimiento,
+    validarCampos,
+], obtenerAlarmas);
+
+//obtener alarma por id
+router.get('/:id', [
+    //VALIDACIONES DEL ENDPOINT
+    validarJWT,
+    esJefeDeMantenimiento,
+    check('id', 'El ID debe ser un numero').isNumeric(),
+    check('id', 'El ID debe ser un numero').isInt(),
+    check('id').custom(existeAlarma),
+    validarCampos,
+], obtenerAlarmaPorId);
 
 // Actualizar alarma al equipamiento
 router.put('/:id', [

@@ -38,8 +38,23 @@ class DataBase {
             })
     }
 
-
     //Querys de los usuarios:
+    async getUsuarios() {
+        const text = `SELECT id, nombre, apellido, email, 'EA' as rol FROM usuario
+        JOIN encargado_area ea
+        on usuario.id = ea.id_usuario
+        where estado = true
+        UNION SELECT id, nombre, apellido, email, 'GO' as rol FROM usuario
+        JOIN gerente g
+        on usuario.id = g.id_usuario
+        where estado = true
+        UNION SELECT id, nombre, apellido, email, 'JM' as rol FROM usuario
+        JOIN jefe_mantenimiento jm
+        on usuario.id = jm.id_usuario
+        where estado = true`;
+        const resp = await this.client.query(text);
+        return resp.rows;
+    }
 
     async getUsuarioPorCorreo(email = '') {
         const text = 'SELECT * FROM usuario WHERE email = $1';
@@ -55,6 +70,34 @@ class DataBase {
 
         const resp = await this.client.query(text, values);
         return resp.rows[0];
+    }
+
+    async getEncargadosArea() {
+        const text = `SELECT id, nombre, apellido, email, 'EA' as rol FROM usuario
+        JOIN encargado_area ea
+        on usuario.id = ea.id_usuario
+        where estado = true`;
+
+        const resp = await this.client.query(text);
+        return resp.rows;
+    }
+
+    async getJefesMantenimiento() {
+        const text = `SELECT id, nombre, apellido, email, 'JM' as rol FROM usuario
+        JOIN jefe_mantenimiento jm
+        on usuario.id = jm.id_usuario
+        where estado = true`;
+        const resp = await this.client.query(text);
+        return resp.rows;
+    }
+
+    async getGerentesOperativos() {
+        const text = `SELECT id, nombre, apellido, email, 'GO' as rol FROM usuario
+        JOIN gerente g
+        on usuario.id = g.id_usuario
+        where estado = true`;
+        const resp = await this.client.query(text);
+        return resp.rows;
     }
 
     async crearUsuario({ id, nombre, apellido, email, password }) {
@@ -209,12 +252,10 @@ class DataBase {
         return resp.rows[0];
     }
 
-
-
     //Querys de las areas:
 
     async getAreas() {
-        const text = 'SELECT * FROM area';
+        const text = 'SELECT id, nombre FROM area WHERE estado = true';
         const resp = await this.client.query(text);
         return resp.rows;
     }
@@ -393,6 +434,12 @@ class DataBase {
         return resp.rows[0];
     }
 
+    async getSectores() {
+        const text = 'SELECT id, nombre, id_area FROM sector WHERE estado = true';
+        const resp = await this.client.query(text);
+        return resp.rows;
+    }
+
     async getSectorPorId(id) {
         const text = 'SELECT * FROM sector WHERE id = $1';
         const values = [id];
@@ -402,8 +449,16 @@ class DataBase {
     }
 
     async getSectoresPorIdArea(id_area) {
-        const text = 'SELECT * from sector where id_area = $1 AND estado = true';
+        const text = 'SELECT id, nombre, id_area from sector where id_area = $1 AND estado = true';
         const values = [id_area];
+
+        const resp = await this.client.query(text, values);
+        return resp.rows;
+    }
+
+    async getEquipamientosPorSector(id_sector) {
+        const text = 'SELECT id, nombre, id_sector FROM equipamiento WHERE id_sector = $1 AND estado = true';
+        const values = [id_sector];
 
         const resp = await this.client.query(text, values);
         return resp.rows;
@@ -411,6 +466,12 @@ class DataBase {
 
 
     // Querys de los responsables/empleados:
+    async getEmpleados() {
+        const text = 'SELECT id, nombre, email FROM responsable WHERE estado = true';
+        const resp = await this.client.query(text);
+        return resp.rows;
+    }
+
     async getEmpleadoByID(id) {
         const text = 'SELECT * FROM responsable WHERE id = $1';
         const values = [id];
@@ -467,6 +528,12 @@ class DataBase {
 
     // Querys del equipamiento:
 
+    async getEquipamientos() {
+        const text = 'SELECT id, nombre, id_sector FROM equipamiento WHERE estado = true';
+        const resp = await this.client.query(text);
+        return resp.rows;
+    }
+
     async getEquipamientoPorId(id) {
         const text = 'SELECT * FROM equipamiento WHERE id = $1';
         const values = [id];
@@ -514,6 +581,12 @@ class DataBase {
     }
 
     // Querys de las alarma:
+
+    async getAlarmas() {
+        const text = 'SELECT * FROM alarma';
+        const resp = await this.client.query(text);
+        return resp.rows;
+    }
 
     async getAlarma(id) {
         const text = 'SELECT * FROM alarma WHERE id = $1';

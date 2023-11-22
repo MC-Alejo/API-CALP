@@ -7,10 +7,35 @@ const { validarCamposDeRoles } = require('../middlewares');
 
 const { validarEmailExiste, validarIdUsuario, areaYaAsignada, existeAreaPorId } = require('../helpers/dbValidators');
 
-const { crearUsuario, actualizarUsuario, eliminarUsuario, actualizarAreaDelEncargado, demitirAreaAEncargado } = require('../controllers');
+const {
+    crearUsuario,
+    actualizarUsuario,
+    eliminarUsuario,
+    actualizarAreaDelEncargado,
+    demitirAreaAEncargado,
+    obtenerUsuarios,
+    obtenerUsuarioPorID,
+} = require('../controllers');
 
 
 const router = Router();
+
+//ruta para obtener todos los usuarios / filtrar por correo
+router.get('/', [
+    //VALIDACIONES DEL ENDPOINT
+    validarJWT,
+    esGerente,
+    validarCampos
+], obtenerUsuarios)
+
+//ruta para obtener un usuario por id
+router.get('/:id', [
+    //VALIDACIONES DEL ENDPOINT
+    validarJWT,
+    esGerente,
+    check('id', 'El formato del ID no es valido').isUUID(),
+    validarCampos
+], obtenerUsuarioPorID)
 
 //ruta para crear un usuario
 router.post('/', [

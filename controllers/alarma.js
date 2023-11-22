@@ -1,5 +1,49 @@
 const { DataBase } = require("../models");
 
+//obtener todas las alarmas
+const obtenerAlarmas = async (req, res) => {
+    try {
+        const db = new DataBase();
+        await db.connect();
+
+        const alarmas = await db.getAlarmas();
+        await db.disconnect();
+        res.json({
+            alarmas
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            errors: [{
+                msg: 'Error al obtener las alarmas'
+            }]
+        });
+    }
+}
+
+//obtener alarma por id
+const obtenerAlarmaPorId = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const db = new DataBase();
+        await db.connect();
+
+        const alarma = await db.getAlarma(id);
+        await db.disconnect();
+        res.json({
+            alarma
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            errors: [{
+                msg: 'Error al obtener la alarma'
+            }]
+        });
+    }
+}
+
 const actualizarAlarmaMantenimiento = async (req, res) => {
     const { id } = req.params;
     const { fecha, hora } = req.body;
@@ -106,5 +150,7 @@ const eliminarAlarmaMantenimiento = async (req, res) => {
 
 module.exports = {
     actualizarAlarmaMantenimiento,
-    eliminarAlarmaMantenimiento
+    eliminarAlarmaMantenimiento,
+    obtenerAlarmaPorId,
+    obtenerAlarmas,
 }

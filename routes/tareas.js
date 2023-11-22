@@ -9,6 +9,8 @@ const { actualizarTarea, finalizarTarea, agregarInventarioATarea } = require('..
 
 const router = Router();
 
+// TODO: GETS
+
 //modificar tarea
 router.put('/:id', [
     validarJWT,

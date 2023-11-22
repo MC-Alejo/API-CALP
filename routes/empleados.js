@@ -5,10 +5,17 @@ const { validarCampos, validarJWT, esJefeDeMantenimiento } = require('../middlew
 
 const { correoEmpleadoExiste, existeEmpleadoPorId } = require('../helpers');
 
-const { crearEmpleado, actualizarEmpleado, eliminarEmpleado } = require('../controllers');
+const { crearEmpleado, actualizarEmpleado, eliminarEmpleado, obtenerEmpleados } = require('../controllers');
 
 const router = Router();
 
+//obtener empleados
+router.get('/', [
+    //VALIDACIONES DEL ENDPOINT
+    validarJWT,
+    esJefeDeMantenimiento,
+    validarCampos
+], obtenerEmpleados)
 
 //crear empleado
 router.post('/', [

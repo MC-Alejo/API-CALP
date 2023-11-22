@@ -4,6 +4,119 @@ const { DataBase } = require("../models");
 const { v4: uuidv4 } = require('uuid');
 const { obtenerRol } = require("../helpers");
 
+const obtenerUsuarios = async (req = request, res = response) => {
+
+    try {
+        const { correo, rol } = req.query;
+
+        const db = new DataBase();
+        await db.connect();
+
+        if (correo) {
+            const usuario = await db.getUsuarioPorCorreo(correo);
+            if (!usuario || usuario.estado === false) {
+                await db.disconnect();
+                return res.json({});
+            }
+            const rol = await db.getRol(usuario.id)
+            const { nombre, apellido, email } = usuario;
+
+            await db.disconnect();
+
+            return res.json({
+                usuario: {
+                    id: usuario.id,
+                    nombre,
+                    apellido,
+                    email,
+                    rol
+                }
+            });
+        }
+
+        if (rol) {
+
+            if (rol === 'EA') {
+                const usuario = await db.getEncargadosArea();
+                await db.disconnect();
+                return res.json({
+                    usuario
+                });
+            }
+
+            if (rol === 'GO') {
+                const usuario = await db.getGerentesOperativos();
+                await db.disconnect();
+                return res.json({
+                    usuario
+                });
+            }
+
+            if (rol === 'JM') {
+                const usuario = await db.getJefesMantenimiento();
+                await db.disconnect();
+                return res.json({
+                    usuario
+                });
+            }
+        }
+
+        const usuarios = await db.getUsuarios();
+
+        await db.disconnect();
+
+        res.json({
+            usuarios
+        });
+
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({
+            errors: [{
+                msg: 'Error en el servidor. Hable con el administrador'
+            }]
+        });
+    }
+}
+
+const obtenerUsuarioPorID = async (req = request, res = response) => {
+
+    try {
+
+        const { id } = req.params;
+
+        const db = new DataBase();
+        await db.connect();
+
+        const usuario = await db.getUsuarioPorId(id);
+        if (!usuario || usuario.estado === false) {
+            await db.disconnect();
+            return res.json({});
+        }
+        const rol = await db.getRol(id)
+        const { nombre, apellido, email } = usuario;
+
+        await db.disconnect();
+
+        res.json({
+            usuario: {
+                id,
+                nombre,
+                apellido,
+                email,
+                rol
+            }
+        });
+
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({
+            errors: [{
+                msg: 'Error en el servidor. Hable con el administrador'
+            }]
+        });
+    }
+}
 
 const crearUsuario = async (req = request, res = response) => {
 
@@ -265,9 +378,11 @@ const eliminarUsuario = async (req = request, res = response) => {
 }
 
 module.exports = {
-    crearUsuario,
-    actualizarUsuario,
     actualizarAreaDelEncargado,
+    actualizarUsuario,
+    crearUsuario,
     demitirAreaAEncargado,
-    eliminarUsuario
+    eliminarUsuario,
+    obtenerUsuarioPorID,
+    obtenerUsuarios,
 }

@@ -1,5 +1,40 @@
 const { DataBase } = require("../models");
 
+const obtenerEmpleados = async (req, res) => {
+    try {
+        const { correo } = req.query;
+
+        const db = new DataBase();
+        await db.connect();
+
+        if (correo) {
+            const resp = await db.getEmpleadoByCorreo(correo);
+            await db.disconnect();
+            if (!resp || resp.estado === false) return res.status(404).json({});
+            return res.json({
+                empleado: {
+                    id: resp.id,
+                    nombre: resp.nombre,
+                    email: resp.email,
+                }
+            })
+        }
+        const empleados = await db.getEmpleados();
+        await db.disconnect();
+
+        res.json({
+            empleados
+        })
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({
+            errors: [{
+                msg: 'Error en el servidor. Hable con el administrador'
+            }]
+        });
+    }
+}
+
 const crearEmpleado = async (req, res) => {
     const { nombre, email } = req.body;
     try {
@@ -93,7 +128,6 @@ const actualizarEmpleado = async (req, res) => {
     }
 }
 
-
 const eliminarEmpleado = async (req, res) => {
     const { id } = req.params;
     try {
@@ -118,5 +152,6 @@ const eliminarEmpleado = async (req, res) => {
 module.exports = {
     actualizarEmpleado,
     crearEmpleado,
-    eliminarEmpleado
+    eliminarEmpleado,
+    obtenerEmpleados
 }

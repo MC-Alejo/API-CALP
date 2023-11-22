@@ -5,10 +5,46 @@ const { validarCampos, validarJWT, esJefeDeMantenimiento } = require('../middlew
 
 const { existeEquipamientoPorId, existeAlarmaMantenimiento } = require('../helpers');
 
-const { actualizarEquipamiento, bajaEquipamiento, crearAlarmaDeMantenimiento } = require('../controllers');
+const {
+    actualizarEquipamiento,
+    bajaEquipamiento,
+    crearAlarmaDeMantenimiento,
+    obtenerEquipamientos,
+    obtenerAlarmaDeEquipamiento,
+    obtenerEquipamientoPorId
+} = require('../controllers');
 
 const router = Router();
 
+//obtener todos los equipamientos
+router.get('/', [
+    //VALIDACIONES DEL ENDPOINT
+    validarJWT,
+    esJefeDeMantenimiento,
+    validarCampos,
+], obtenerEquipamientos);
+
+//obtener maquinaria por id
+router.get('/:id', [
+    //VALIDACIONES DEL ENDPOINT
+    validarJWT,
+    esJefeDeMantenimiento,
+    check('id', 'El ID debe ser un numero').isNumeric(),
+    check('id', 'El ID debe ser un numero').isInt(),
+    check('id').custom(existeEquipamientoPorId),
+    validarCampos,
+], obtenerEquipamientoPorId);
+
+//obtener la alarma de una maquinaria
+router.get('/:id/alarma', [
+    //VALIDACIONES DEL ENDPOINT
+    validarJWT,
+    esJefeDeMantenimiento,
+    check('id', 'El ID debe ser un numero').isNumeric(),
+    check('id', 'El ID debe ser un numero').isInt(),
+    check('id').custom(existeEquipamientoPorId),
+    validarCampos,
+], obtenerAlarmaDeEquipamiento);
 
 //Actualizar equipamiento (nombre y sector al que pertenece)
 router.put('/:id', [
@@ -21,7 +57,6 @@ router.put('/:id', [
     validarCampos,
 ], actualizarEquipamiento);
 
-
 //Dar de baja equipamiento de un sector
 router.delete('/:id', [
     //VALIDACIONES DEL ENDPOINT
@@ -32,8 +67,6 @@ router.delete('/:id', [
     check('id').custom(existeEquipamientoPorId),
     validarCampos,
 ], bajaEquipamiento);
-
-
 
 //Dar de alta una alarma de mantenimiento a un equipamiento
 router.post('/:id', [

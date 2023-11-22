@@ -1,5 +1,74 @@
 const { DataBase } = require("../models");
 
+//obtener todos los equipamientos
+const obtenerEquipamientos = async (req, res) => {
+    try {
+        const db = new DataBase();
+        await db.connect();
+
+        const equipamientos = await db.getEquipamientos();
+        await db.disconnect();
+        res.json({
+            equipamientos
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            errors: [{
+                msg: 'Error al obtener los equipamientos'
+            }]
+        });
+    }
+}
+
+//obtener maquinaria por id
+const obtenerEquipamientoPorId = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const db = new DataBase();
+        await db.connect();
+
+        const equipamiento = await db.getEquipamientoPorId(id);
+        await db.disconnect();
+        res.json({
+            equipamiento: {
+                id: equipamiento.id,
+                nombre: equipamiento.nombre,
+                id_sector: equipamiento.id_sector
+            }
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            errors: [{
+                msg: 'Error al obtener el equipamiento'
+            }]
+        });
+    }
+
+}
+
+//obtener la alarma de una maquinaria
+const obtenerAlarmaDeEquipamiento = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const db = new DataBase();
+        await db.connect();
+
+        const alarma = await db.getAlarmaDeEquipamiento(id);
+        await db.disconnect();
+        res.json({
+            alarma
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            errors: [{
+                msg: 'Error al obtener la alarma de mantenimiento'
+            }]
+        });
+    }
+}
 
 //Actualizo nombre o sector al que pertenece el equipamiento o maquinaria
 const actualizarEquipamiento = async (req, res) => {
@@ -124,5 +193,8 @@ const crearAlarmaDeMantenimiento = async (req, res) => {
 module.exports = {
     actualizarEquipamiento,
     bajaEquipamiento,
-    crearAlarmaDeMantenimiento
+    crearAlarmaDeMantenimiento,
+    obtenerAlarmaDeEquipamiento,
+    obtenerEquipamientoPorId,
+    obtenerEquipamientos,
 }
