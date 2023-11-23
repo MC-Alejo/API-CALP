@@ -199,7 +199,6 @@ const crearSector = async (req, res) => {
     }
 }
 
-
 module.exports = {
     actualizarNombreArea,
     crearArea,
