@@ -1,5 +1,101 @@
 const { DataBase } = require("../models");
 
+const obtenerSolicitudes = async (req, res) => {
+    try {
+        const { estado } = req.query;
+        const db = new DataBase();
+        await db.connect();
+        if (estado) {
+            if (estado === 'aceptada' || estado === 'rechazada' || estado === 'pendiente') {
+                const solicitudes = await db.getSolicitudesPorEstado(estado);
+                await db.disconnect();
+                return res.status(200).json({
+                    solicitudes
+                });
+            }
+        }
+        const solicitudes = await db.getSolicitudes();
+        await db.disconnect();
+
+        res.status(200).json({
+            solicitudes
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            msg: 'Error al obtener las solicitudes'
+        });
+    }
+}
+
+const obtenerSolicitudesPorIdUsuario = async (req, res) => {
+    const { id } = req.params;
+    const { estado } = req.query;
+    try {
+        const db = new DataBase();
+        await db.connect();
+        if (estado) {
+            if (estado === 'aceptada' || estado === 'rechazada' || estado === 'pendiente') {
+                const solicitudes = await db.getSolicitudesPorIdUsuario(id, estado);
+                await db.disconnect();
+                return res.status(200).json({
+                    solicitudes
+                });
+            }
+        }
+        const solicitudes = await db.getSolicitudesPorIdUsuario(id);
+        await db.disconnect();
+
+        res.status(200).json({
+            solicitudes
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            msg: 'Error al obtener las solicitudes'
+        });
+    }
+}
+
+const obtenerSolicitudesPorId = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const db = new DataBase();
+        await db.connect();
+        const solicitudes = await db.getSolicitudPorId(id);
+        await db.disconnect();
+
+        res.status(200).json({
+            solicitudes
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            msg: 'Error al obtener las solicitudes'
+        });
+    }
+}
+
+const obtenerTareaPorIdSolicitud = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const db = new DataBase();
+        await db.connect();
+        const tarea = await db.getTareaPorIdSolicitud(id);
+        await db.disconnect();
+
+        res.status(200).json({
+            tarea
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            msg: 'Error al obtener la tarea'
+        });
+    }
+}
 
 const crearSolicitud = async (req, res) => {
     const { descripcion, id_equipamiento } = req.body;
@@ -83,5 +179,9 @@ const crearTarea = async (req, res) => {
 module.exports = {
     crearSolicitud,
     crearTarea,
+    obtenerSolicitudes,
+    obtenerSolicitudesPorId,
+    obtenerSolicitudesPorIdUsuario,
+    obtenerTareaPorIdSolicitud,
     rechazarSolicitud,
 }

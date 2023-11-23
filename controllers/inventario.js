@@ -1,5 +1,46 @@
 const { DataBase } = require("../models");
 
+const obtenerInventario = async (req, res = response) => {
+
+    try {
+        const db = new DataBase();
+        await db.connect();
+
+        const inventario = await db.getInventario();
+
+        await db.disconnect();
+
+        res.json({
+            inventario
+        })
+    } catch (error) {
+
+    }
+}
+
+const obtenerInventarioPorId = async (req, res = response) => {
+    const { id } = req.params;
+
+    try {
+        const db = new DataBase();
+        await db.connect();
+
+        const inventario = await db.getInventarioPorId(id);
+
+        await db.disconnect();
+
+        res.json({
+            inventario: {
+                id: inventario.id,
+                nombre: inventario.nombre,
+                stock: inventario.stock,
+                id_deposito: inventario.id_deposito,
+            }
+        })
+    } catch (error) {
+
+    }
+}
 
 const actualizarInventario = async (req, res = response) => {
     const { id } = req.params;
@@ -92,5 +133,7 @@ const eliminarInventario = async (req, res = response) => {
 
 module.exports = {
     actualizarInventario,
-    eliminarInventario
+    eliminarInventario,
+    obtenerInventario,
+    obtenerInventarioPorId,
 }

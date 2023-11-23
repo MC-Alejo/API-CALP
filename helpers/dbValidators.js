@@ -233,6 +233,20 @@ const existeSolicitudPorId = async (id) => {
 
 }
 
+const SolicitudEstaPendiente = async (id) => {
+    const db = new DataBase();
+    await db.connect();
+    const resp = await db.getSolicitudPorId(id);
+    if (resp.estado !== 'pendiente') {
+        await db.disconnect();
+        throw new Error(`La solcitud ya fue tratada`);
+    }
+    await db.disconnect();
+
+    return true;
+
+}
+
 // ---------------------  VALIDACIONES TAREAS  --------------------------------
 const existeTareaPorId = async (id) => {
     const db = new DataBase();
@@ -264,6 +278,7 @@ module.exports = {
     existeSectorPorId,
     existeSolicitudPorId,
     existeTareaPorId,
+    SolicitudEstaPendiente,
     validarEmailExiste,
     validarIdUsuario,
 }

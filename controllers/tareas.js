@@ -1,6 +1,87 @@
 const { response } = require("express");
 const { DataBase } = require("../models");
 
+const obtenerTareas = async (req, res = response) => {
+    try {
+        const { estado, prioridad } = req.query;
+        const db = new DataBase();
+        await db.connect();
+
+        if (estado) {
+            if (estado === 'en curso' || estado === 'finalizada') {
+                const tareas = await db.getTareasPorEstado(estado);
+                await db.disconnect();
+                return res.json({
+                    tareas
+                })
+            }
+        }
+
+        if (prioridad) {
+            if (prioridad === '1' || prioridad === '2' || prioridad === '3') {
+                const tareas = await db.getTareasPorPrioridad(prioridad);
+                await db.disconnect();
+                return res.json({
+                    tareas
+                })
+            }
+        }
+
+        const tareas = await db.getTareas();
+        await db.disconnect();
+        return res.json({
+            tareas
+        })
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            msg: 'Error al obtener tareas'
+        })
+    }
+}
+
+const obtenerTareaPorId = async (req, res = response) => {
+    const { id } = req.params;
+    try {
+        const db = new DataBase();
+        await db.connect();
+        const tarea = await db.getTareaPorId(id);
+
+        if (!tarea) {
+            await db.disconnect();
+            return res.status(400).json({ errors: [{ msg: 'No existe una tarea con ese id' }] })
+        }
+
+        await db.disconnect();
+        return res.json({
+            tarea
+        })
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            msg: 'Error al obtener tarea por id'
+        })
+    }
+}
+
+const obtenerTareasPorJuez = async (req, res = response) => {
+    const { id } = req.params;
+    try {
+        const db = new DataBase();
+        await db.connect();
+        const tareas = await db.getTareasPorJuez(id);
+        await db.disconnect();
+        return res.json({
+            tareas
+        })
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            msg: 'Error al obtener tareas por juez'
+        })
+    }
+}
+
 const actualizarTarea = async (req, res = response) => {
     const { id } = req.params;
     const { id_responsable, prioridad, descripcion = '' } = req.body;
@@ -102,5 +183,8 @@ const agregarInventarioATarea = async (req, res = response) => {
 module.exports = {
     actualizarTarea,
     agregarInventarioATarea,
-    finalizarTarea
+    finalizarTarea,
+    obtenerTareaPorId,
+    obtenerTareas,
+    obtenerTareasPorJuez,
 }

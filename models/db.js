@@ -309,6 +309,13 @@ class DataBase {
     }
 
     // Querys de los depositos:
+
+    async obtenerDepositos() {
+        const text = 'SELECT id, nombre FROM deposito';
+        const resp = await this.client.query(text);
+        return resp.rows;
+    }
+
     async getDepositoPorId(id) {
         const text = 'SELECT * FROM deposito WHERE id = $1';
         const values = [id];
@@ -320,6 +327,22 @@ class DataBase {
     async getDepositoPorNombre(nombre) {
         const text = 'SELECT * FROM deposito WHERE nombre = $1';
         const values = [nombre];
+
+        const resp = await this.client.query(text, values);
+        return resp.rows[0];
+    }
+
+    async getInventarioDeposito(id) {
+        const text = 'SELECT id, nombre, stock, id_deposito FROM inventario WHERE id_deposito = $1 AND estado = true';
+        const values = [id];
+
+        const resp = await this.client.query(text, values);
+        return resp.rows;
+    }
+
+    async getDepositoDeJefe(id) {
+        const text = 'SELECT id, nombre FROM deposito WHERE id = (SELECT id_deposito FROM jefe_mantenimiento WHERE id_usuario = $1)';
+        const values = [id];
 
         const resp = await this.client.query(text, values);
         return resp.rows[0];
@@ -342,6 +365,12 @@ class DataBase {
     }
 
     // Querys del inventario:
+
+    async getInventario() {
+        const text = 'SELECT id, nombre, stock, id_deposito FROM inventario WHERE estado = true';
+        const resp = await this.client.query(text);
+        return resp.rows;
+    }
 
     async getInventarioPorId(id) {
         const text = 'SELECT * FROM inventario WHERE id = $1';
@@ -643,9 +672,47 @@ class DataBase {
     }
 
     // Querys de las solicitudes:
+
+    async getSolicitudes() {
+        const text = 'SELECT * FROM solicitud';
+        const resp = await this.client.query(text);
+        return resp.rows;
+    }
+
+    async getSolicitudesPorIdUsuario(id, estado = '') {
+        const text = 'SELECT * FROM solicitud WHERE id_usuario = $1';
+        const values = [id];
+
+        if (estado !== '') {
+            const text = 'SELECT * FROM solicitud WHERE id_usuario = $1 AND estado = $2';
+            const values = [id, estado];
+            const resp = await this.client.query(text, values);
+            return resp.rows;
+        }
+
+        const resp = await this.client.query(text, values);
+        return resp.rows;
+    }
+
     async getSolicitudPorId(id) {
         const text = 'SELECT * FROM solicitud WHERE id = $1';
         const values = [id];
+
+        const resp = await this.client.query(text, values);
+        return resp.rows[0];
+    }
+
+    async getSolicitudesPorEstado(estado) {
+        const text = 'SELECT * FROM solicitud WHERE estado = $1';
+        const values = [estado];
+
+        const resp = await this.client.query(text, values);
+        return resp.rows;
+    }
+
+    async getTareaPorIdSolicitud(id_solicitud) {
+        const text = 'SELECT * FROM tarea WHERE id_solicitud = $1';
+        const values = [id_solicitud];
 
         const resp = await this.client.query(text, values);
         return resp.rows[0];
@@ -676,6 +743,53 @@ class DataBase {
     }
 
     // Querys de las tareas:
+
+    async getTareas() {
+        const text = 'SELECT * FROM tarea';
+        const resp = await this.client.query(text);
+        return resp.rows;
+    }
+
+    async getTareasPorEstado(estado) {
+        const text = 'SELECT * FROM tarea WHERE estado = $1';
+        const values = [estado];
+
+        const resp = await this.client.query(text, values);
+        return resp.rows;
+    }
+
+    async getTareasPorPrioridad(prioridad) {
+        const text = 'SELECT * FROM tarea WHERE prioridad = $1';
+        const values = [prioridad];
+
+        const resp = await this.client.query(text, values);
+        return resp.rows;
+    }
+
+    async getTareasPorJuez(id_juez) {
+        const text = `select
+            s.id_usuario as usr_solicitante,
+            s.id as id_solicitud,
+            s.estado as estado_solicitud,
+            s.fecha as fecha_soli_realizada,
+            s.descripcion as desc_solicitud,
+            s.id_equipamiento,
+            tar.id as id_tarea,
+            tar.estado as estado_tarea,
+            tar.fecha as fecha_tar_tratada,
+            tar.descripcion as desc_tar,
+            tar.prioridad as priori_tar,
+            tar.id_responsable as responsable_tar
+        from solicitud s
+        join tarea tar
+        on tar.id_solicitud = s.id
+        where id_juez = $1`;
+        const values = [id_juez];
+
+        const resp = await this.client.query(text, values);
+        return resp.rows;
+    }
+
     async crearTarea(estado, descripcion, prioridad, id_solicitud, id_responsable) {
         const text = 'INSERT INTO tarea (estado, fecha, descripcion, prioridad, id_solicitud, id_responsable) VALUES ($1, CURRENT_DATE, $2, $3, $4, $5) RETURNING *';
         const values = [estado, descripcion, prioridad, id_solicitud, id_responsable];

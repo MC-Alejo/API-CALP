@@ -2,14 +2,59 @@ const { Router } = require('express');
 const { check } = require('express-validator');
 
 const { validarCampos, validarJWT, esEncargadoDeArea, esJefeDeMantenimiento } = require('../middlewares');
+const { existeEquipamientoPorId, existeSolicitudPorId, existeEmpleadoPorId, SolicitudEstaPendiente, validarIdUsuario } = require('../helpers');
 
-const { crearSolicitud, rechazarSolicitud, crearTarea } = require('../controllers/solicitudes');
-const { existeEquipamientoPorId, existeSolicitudPorId, existeEmpleadoPorId } = require('../helpers');
+const {
+    crearSolicitud,
+    rechazarSolicitud,
+    crearTarea,
+    obtenerSolicitudes,
+    obtenerSolicitudesPorIdUsuario,
+    obtenerSolicitudesPorId,
+    obtenerTareaPorIdSolicitud
+} = require('../controllers/solicitudes');
 
 
 const router = Router();
 
-// TODO: GETS
+//obtener solicitudes
+router.get('/', [
+    validarJWT,
+    esJefeDeMantenimiento,
+    validarCampos,
+], obtenerSolicitudes);
+
+//obtener solicitudes por id de usuario
+router.get('/usr/:id', [
+    validarJWT,
+    esEncargadoDeArea,
+    check('id', 'El ID es obligatorio').not().isEmpty(),
+    check('id', 'El ID no posee un formato valido').isUUID(),
+    check('id').custom(validarIdUsuario),
+    validarCampos,
+], obtenerSolicitudesPorIdUsuario);
+
+//obtener solicitudes por id
+router.get('/:id', [
+    validarJWT,
+    esJefeDeMantenimiento,
+    check('id', 'El ID es obligatorio').not().isEmpty(),
+    check('id', 'El ID debe ser un numero').isNumeric(),
+    check('id', 'El ID debe ser un numero').isInt(),
+    check('id').custom(existeSolicitudPorId),
+    validarCampos,
+], obtenerSolicitudesPorId);
+
+//obtener la tarea de una solicitud
+router.get('/:id/tarea', [
+    validarJWT,
+    esJefeDeMantenimiento,
+    check('id', 'El ID es obligatorio').not().isEmpty(),
+    check('id', 'El ID debe ser un numero').isNumeric(),
+    check('id', 'El ID debe ser un numero').isInt(),
+    check('id').custom(existeSolicitudPorId),
+    validarCampos,
+], obtenerTareaPorIdSolicitud);
 
 // crear una solicitud
 router.post('/', [
@@ -44,7 +89,7 @@ router.delete('/:id', [
     validarCampos,
 ], rechazarSolicitud);
 
-//crear una tarea (solicitud aceptada)
+//crear una tarea en base a las solicitudes de los EA (solicitud aceptada)
 router.post('/:id', [
     validarJWT,
     esJefeDeMantenimiento,
@@ -52,6 +97,7 @@ router.post('/:id', [
     check('id', 'El ID debe ser un numero').isNumeric(),
     check('id', 'El ID debe ser un numero').isInt(),
     check('id').custom(existeSolicitudPorId),
+    check('id').custom(SolicitudEstaPendiente), //debe estar pendiente para poder crear una tarea
 
     check('prioridad', 'La prioridad es obligatoria').not().isEmpty(),
     check('id_responsable', 'El id_responsable es obligatorio').not().isEmpty(),

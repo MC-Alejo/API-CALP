@@ -6,12 +6,57 @@ const { validarCampos, validarJWT, esGerente, esJefeDeMantenimiento } = require(
 
 const { existeNombreDeposito, existeDepositoPorId, existeInventarioPorNombre } = require('../helpers');
 
-const { crearDeposito, actualizarDeposito, agregarAInventario } = require('../controllers');
+const {
+    crearDeposito,
+    actualizarDeposito,
+    agregarAInventario,
+    obtenerDepositos,
+    obtenerDepositosPorId,
+    obtenerInventarioDeposito,
+    obtenerDepositoDeJefe
+} = require('../controllers');
 
 
 const router = Router();
 
-// TODO: GETS
+//obtener depositos
+router.get('/', [
+    //VALIDACIONES DEL ENDPOINT
+    validarJWT,
+    esJefeDeMantenimiento,
+    validarCampos,
+], obtenerDepositos);
+
+//obtener deposito por id
+router.get('/:id', [
+    //VALIDACIONES DEL ENDPOINT
+    validarJWT,
+    esJefeDeMantenimiento,
+    check('id', 'El ID debe ser un numero').isNumeric(),
+    check('id', 'El ID debe ser un numero').isInt(),
+    check('id').custom(existeDepositoPorId),
+    validarCampos,
+], obtenerDepositosPorId);
+
+//obtener inventario de deposito
+router.get('/:id/inventario', [
+    //VALIDACIONES DEL ENDPOINT
+    validarJWT,
+    esJefeDeMantenimiento,
+    check('id', 'El ID debe ser un numero').isNumeric(),
+    check('id', 'El ID debe ser un numero').isInt(),
+    check('id').custom(existeDepositoPorId),
+    validarCampos,
+], obtenerInventarioDeposito);
+
+// obtener deposito de jefe de mantenimiento
+router.get('/usr/:id', [
+    //VALIDACIONES DEL ENDPOINT
+    validarJWT,
+    esJefeDeMantenimiento,
+    check('id', 'El formato de ID no es valido').isUUID(),
+    validarCampos,
+], obtenerDepositoDeJefe);
 
 // Crear Deposito
 router.post('/', [
