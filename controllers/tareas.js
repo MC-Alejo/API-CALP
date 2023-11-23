@@ -82,6 +82,50 @@ const obtenerTareasPorJuez = async (req, res = response) => {
     }
 }
 
+const obtenerInventarioDeTarea = async (req, res = response) => {
+    const { id } = req.params;
+    try {
+        const db = new DataBase();
+        await db.connect();
+        const inventario = await db.getInventarioDeTarea(id);
+        await db.disconnect();
+        return res.json({
+            inventario
+        })
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            msg: 'Error al obtener inventario de tarea'
+        })
+    }
+
+}
+
+const cargarTareaDelJefe = async (req, res = response) => {
+    const { descripcion, prioridad, id_responsable } = req.body;
+    const id_usuario = req.usuario.id;
+    try {
+        const db = new DataBase();
+        await db.connect();
+        const solicitud = await db.crearSolicitud('', null, id_usuario);
+        const tarea = await db.crearTarea('en curso', descripcion, prioridad, solicitud.id, id_responsable,);
+        await db.modificarEstadoSolicitud(solicitud.id, 'aceptada');
+        await db.setJuezSolicitud(solicitud.id, id_usuario);
+        await db.disconnect();
+
+        return res.status(201).json({
+            msg: 'Tarea creada correctamente',
+            tarea
+        })
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            msg: 'Error al crear tarea'
+        })
+    }
+}
+
 const actualizarTarea = async (req, res = response) => {
     const { id } = req.params;
     const { id_responsable, prioridad, descripcion = '' } = req.body;
@@ -168,7 +212,7 @@ const agregarInventarioATarea = async (req, res = response) => {
         const inventarioTarea = await db.agregarInventarioATarea(id, id_inventario, cantidad);
         await db.disconnect();
 
-        return res.json({
+        return res.status(201).json({
             msg: 'Inventario agregado correctamente',
             inventarioTarea
         })
@@ -183,7 +227,9 @@ const agregarInventarioATarea = async (req, res = response) => {
 module.exports = {
     actualizarTarea,
     agregarInventarioATarea,
+    cargarTareaDelJefe,
     finalizarTarea,
+    obtenerInventarioDeTarea,
     obtenerTareaPorId,
     obtenerTareas,
     obtenerTareasPorJuez,

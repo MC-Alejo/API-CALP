@@ -847,6 +847,14 @@ class DataBase {
         return resp.rows[0];
     }
 
+    async getInventarioDeTarea(id_tarea) {
+        const text = 'SELECT * FROM inv_tar WHERE id_tarea = $1';
+        const values = [id_tarea];
+
+        const resp = await this.client.query(text, values);
+        return resp.rows;
+    }
+
     async getInventarioEnTarea(id_tarea, id_inventario) {
         const text = 'SELECT * FROM inv_tar WHERE id_tarea = $1 AND id_inventario = $2';
         const values = [id_tarea, id_inventario];

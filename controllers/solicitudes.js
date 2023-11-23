@@ -146,7 +146,6 @@ const rechazarSolicitud = async (req, res) => {
     }
 }
 
-
 const crearTarea = async (req, res) => {
     const { descripcion = '', prioridad, id_responsable } = req.body;
     const { id } = req.params;
