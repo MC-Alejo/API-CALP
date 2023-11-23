@@ -18,7 +18,7 @@ class DataBase {
     }
 
 
-    //Conectar a la DB
+    // ----------------- Conectar a la DB -----------------
     async connect() {
         await this.client.connect()
             .then(() => console.log('db connect'))
@@ -28,7 +28,7 @@ class DataBase {
             })
     }
 
-    //Desconectar la DB
+    // ----------------- Desconectar la DB -----------------
     async disconnect() {
         await this.client.end()
             .then(() => console.log('db disconnect'))
@@ -38,7 +38,7 @@ class DataBase {
             })
     }
 
-    //Querys de los usuarios:
+    // ----------------- Querys de los usuarios:  -----------------
     async getUsuarios() {
         const text = `SELECT id, nombre, apellido, email, 'EA' as rol FROM usuario
         JOIN encargado_area ea
@@ -252,7 +252,7 @@ class DataBase {
         return resp.rows[0];
     }
 
-    //Querys de las areas:
+    // ----------------- Querys de las areas:  -----------------
 
     async getAreas() {
         const text = 'SELECT id, nombre FROM area WHERE estado = true';
@@ -308,7 +308,7 @@ class DataBase {
         return resp.rows[0];
     }
 
-    // Querys de los depositos:
+    // ----------------- Querys de los depositos:  -----------------
 
     async obtenerDepositos() {
         const text = 'SELECT id, nombre FROM deposito';
@@ -364,7 +364,7 @@ class DataBase {
         return resp.rows[0];
     }
 
-    // Querys del inventario:
+    // ----------------- Querys del inventario: -----------------
 
     async getInventario() {
         const text = 'SELECT id, nombre, stock, id_deposito FROM inventario WHERE estado = true';
@@ -424,7 +424,7 @@ class DataBase {
         return resp;
     }
 
-    // Query de los sectores:
+    // ----------------- Query de los sectores:  -----------------
     async crearSector(id_area, nombre) {
         const text = 'INSERT INTO sector (id_area, nombre) VALUES ($1, $2) RETURNING *';
         const values = [id_area, nombre];
@@ -494,7 +494,7 @@ class DataBase {
     }
 
 
-    // Querys de los responsables/empleados:
+    // ----------------- Querys de los responsables/empleados: -----------------
     async getEmpleados() {
         const text = 'SELECT id, nombre, email FROM responsable WHERE estado = true';
         const resp = await this.client.query(text);
@@ -555,7 +555,7 @@ class DataBase {
         return resp.rows[0];
     }
 
-    // Querys del equipamiento:
+    // ----------------- Querys del equipamiento: -----------------
 
     async getEquipamientos() {
         const text = 'SELECT id, nombre, id_sector FROM equipamiento WHERE estado = true';
@@ -609,7 +609,7 @@ class DataBase {
         return resp.rows[0];
     }
 
-    // Querys de las alarma:
+    // ----------------- Querys de las alarma: -----------------
 
     async getAlarmas() {
         const text = 'SELECT * FROM alarma';
@@ -671,7 +671,7 @@ class DataBase {
         return resp.rows[0];
     }
 
-    // Querys de las solicitudes:
+    // ----------------- Querys de las solicitudes: -----------------
 
     async getSolicitudes() {
         const text = 'SELECT * FROM solicitud';
@@ -742,7 +742,7 @@ class DataBase {
         return resp.rows[0];
     }
 
-    // Querys de las tareas:
+    // ----------------- Querys de las tareas: -----------------
 
     async getTareas() {
         const text = 'SELECT * FROM tarea';
