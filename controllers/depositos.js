@@ -3,9 +3,9 @@ const { DataBase } = require("../models");
 const obtenerDepositos = async (req, res = response) => {
     try {
         const db = new DataBase();
-        await db.connect();
+
         const depositos = await db.obtenerDepositos();
-        await db.disconnect();
+
         res.json({
             depositos
         });
@@ -23,9 +23,9 @@ const obtenerDepositosPorId = async (req, res = response) => {
     const { id } = req.params;
     try {
         const db = new DataBase();
-        await db.connect();
+
         const deposito = await db.getDepositoPorId(id);
-        await db.disconnect();
+
         res.json({
             deposito
         });
@@ -43,9 +43,9 @@ const obtenerInventarioDeposito = async (req, res = response) => {
     const { id } = req.params;
     try {
         const db = new DataBase();
-        await db.connect();
+
         const inventario = await db.getInventarioDeposito(id);
-        await db.disconnect();
+
         res.json({
             inventario
         });
@@ -63,9 +63,9 @@ const obtenerDepositoDeJefe = async (req, res = response) => {
     const { id } = req.params;
     try {
         const db = new DataBase();
-        await db.connect();
+
         const deposito = await db.getDepositoDeJefe(id);
-        await db.disconnect();
+
         res.json({
             deposito
         });
@@ -84,9 +84,9 @@ const crearDeposito = async (req, res = response) => {
     const { nombre } = req.body;
     try {
         const db = new DataBase();
-        await db.connect();
+
         const deposito = await db.crearDeposito(nombre);
-        await db.disconnect();
+
         res.status(201).json({
             deposito
         });
@@ -105,9 +105,9 @@ const actualizarDeposito = async (req, res = response) => {
     const { nombre } = req.body;
     try {
         const db = new DataBase();
-        await db.connect();
+
         const deposito = await db.actualizarDeposito(id, nombre);
-        await db.disconnect();
+
         res.json({
             msg: 'Deposito actualizado correctamente',
             deposito
@@ -127,9 +127,9 @@ const agregarAInventario = async (req, res = response) => {
     const { nombre, stock } = req.body;
     try {
         const db = new DataBase();
-        await db.connect();
+
         const { estado, ...inventario } = await db.agregarAInventario(nombre, stock, id);
-        await db.disconnect();
+
         res.status(201).json({
             inventario
         });

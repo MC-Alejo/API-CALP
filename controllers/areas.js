@@ -3,10 +3,20 @@ const { DataBase } = require("../models");
 //todas las areas
 const obtenerAreas = async (req, res) => {
     try {
+        const { encargados } = req.query;
+
         const db = new DataBase();
-        await db.connect();
+
+        if(encargados){
+            const areas = await db.getAreasYEncargados();
+
+            return res.json({
+                areas
+            })
+        }
+       
         const areas = await db.getAreas();
-        await db.disconnect();
+        
         res.json({
             areas
         });
@@ -25,9 +35,9 @@ const obtenerArea = async (req, res) => {
     const { id } = req.params;
     try {
         const db = new DataBase();
-        await db.connect();
+        
         const area = await db.getAreaPorId(id);
-        await db.disconnect();
+        
         res.json({
             area: {
                 id: area.id,
@@ -50,11 +60,11 @@ const obtenerAreaPorIdUsuario = async (req, res) => {
     const { id } = req.params;
     try {
         const db = new DataBase();
-        await db.connect();
+        
         const areaEA = await db.getAreaDelUsuario(id);
         if (!areaEA || areaEA.estado === false) return res.status(404).json({});
         const { nombre } = await db.getAreaPorId(areaEA.id_area);
-        await db.disconnect();
+        
         res.json({
             area: {
                 id: areaEA.id_area,
@@ -77,9 +87,9 @@ const obtenerSectoresPorIdArea = async (req, res) => {
     const { id } = req.params;
     try {
         const db = new DataBase();
-        await db.connect();
+        
         const sectores = await db.getSectoresPorIdArea(id);
-        await db.disconnect();
+        
         res.json({
             sectores
         });
@@ -99,9 +109,9 @@ const crearArea = async (req, res) => {
     const { nombre } = req.body;
     try {
         const db = new DataBase();
-        await db.connect();
+        
         const area = await db.crearArea(nombre);
-        await db.disconnect();
+        
         res.status(201).json({
             area
         });
@@ -121,9 +131,9 @@ const actualizarNombreArea = async (req, res) => {
     const { nombre } = req.body;
     try {
         const db = new DataBase();
-        await db.connect();
+        
         await db.actualizarNombreArea(id, nombre);
-        await db.disconnect();
+        
         res.json({
             msg: 'Nombre de área actualizado con exito'
         });
@@ -143,7 +153,7 @@ const eliminarArea = async (req, res) => {
     try {
 
         const db = new DataBase();
-        await db.connect();
+        
 
         const encargado = await db.validarAreaDefinida(id)
         //Eliminar el area implica no solo cambiar el estado de true a false sino que:
@@ -161,7 +171,7 @@ const eliminarArea = async (req, res) => {
 
         //finalmente se elimina logicamente el area
         await db.eliminarArea(id);
-        await db.disconnect();
+        
 
         res.json({
             msg: 'El área se eliminó con exito'
@@ -183,9 +193,9 @@ const crearSector = async (req, res) => {
 
     try {
         const db = new DataBase();
-        await db.connect();
+        
         const sector = await db.crearSector(id, nombre);
-        await db.disconnect();
+        
         res.status(201).json({
             sector
         });

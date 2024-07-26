@@ -4,11 +4,11 @@ const obtenerInventario = async (req, res = response) => {
 
     try {
         const db = new DataBase();
-        await db.connect();
+        
 
         const inventario = await db.getInventario();
 
-        await db.disconnect();
+        
 
         res.json({
             inventario
@@ -23,11 +23,11 @@ const obtenerInventarioPorId = async (req, res = response) => {
 
     try {
         const db = new DataBase();
-        await db.connect();
+        
 
         const inventario = await db.getInventarioPorId(id);
 
-        await db.disconnect();
+        
 
         res.json({
             inventario: {
@@ -85,13 +85,13 @@ const actualizarInventario = async (req, res = response) => {
 
     try {
         const db = new DataBase();
-        await db.connect();
+        
 
         if (nombre) {
             const resp = await db.getInventarioPorNombre(nombre);
 
             if (resp && resp.estado) {
-                await db.disconnect();
+                
                 return res.status(400).json({ errors: [{ msg: 'Ya existe un inventario con ese nombre' }] })
             }
 
@@ -99,7 +99,7 @@ const actualizarInventario = async (req, res = response) => {
 
         const { estado, ...inventario } = await db.modificarInventario(id, { nombre, stock: parseInt(stock) });
 
-        await db.disconnect();
+        
 
         res.json({
             msg: 'El inventario ha sido actualizado',
@@ -117,11 +117,11 @@ const eliminarInventario = async (req, res = response) => {
 
     try {
         const db = new DataBase();
-        await db.connect();
+        
 
         const { estado, ...inventario } = await db.eliminarInventario(id);
 
-        await db.disconnect();
+        
 
         res.json({
             msg: 'El inventario ha sido eliminado'

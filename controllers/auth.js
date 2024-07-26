@@ -12,10 +12,9 @@ const login = async (req=request, res = response) => {
     try {
         //creamos la instancia de la BD y nos conectamos
         const db = new DataBase();
-        await db.connect();
 
         // Verificar si el email existe
-        const usuario = await db.getUsuarioPorCorreo(email);
+        const usuario = await db.getUsuarioPorCorreo(email.toLowerCase());
         if (!usuario) {
             return res.status(400).json({errors:[{
                 msg: 'Usuario / Password no son correctos - correo'
@@ -39,7 +38,6 @@ const login = async (req=request, res = response) => {
 
         // Generar el JWT
         const token = await generarJWT(usuario.id);
-        await db.disconnect(); // nos desconectamos de la BD
 
         usuario.rol = await obtenerRol(usuario.id);
 

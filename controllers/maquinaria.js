@@ -4,10 +4,10 @@ const { DataBase } = require("../models");
 const obtenerEquipamientos = async (req, res) => {
     try {
         const db = new DataBase();
-        await db.connect();
+        
 
         const equipamientos = await db.getEquipamientos();
-        await db.disconnect();
+        
         res.json({
             equipamientos
         });
@@ -26,10 +26,10 @@ const obtenerEquipamientoPorId = async (req, res) => {
     const { id } = req.params;
     try {
         const db = new DataBase();
-        await db.connect();
+        
 
         const equipamiento = await db.getEquipamientoPorId(id);
-        await db.disconnect();
+        
         res.json({
             equipamiento: {
                 id: equipamiento.id,
@@ -53,10 +53,30 @@ const obtenerAlarmaDeEquipamiento = async (req, res) => {
     const { id } = req.params;
     try {
         const db = new DataBase();
-        await db.connect();
 
-        const alarma = await db.getAlarmaDeEquipamiento(id);
-        await db.disconnect();
+        const alarma = await db.getAlarmasPorIdMaquina(id);
+        
+        res.json({
+            alarma
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            errors: [{
+                msg: 'Error al obtener la alarma de mantenimiento'
+            }]
+        });
+    }
+}
+
+//obtener las alarmas que ha hecho un juez en una determinada maquinaria
+const obtenerAlarmaDeJuezMaquinaria = async (req, res) => {
+    const { id, id_juez } = req.params;
+    try {
+        const db = new DataBase();
+
+        const alarma = await db.getAlarmasPorMaquinaJuez(id_juez, id);
+        
         res.json({
             alarma
         });
@@ -95,7 +115,7 @@ const actualizarEquipamiento = async (req, res) => {
 
     try {
         const db = new DataBase();
-        await db.connect();
+        
 
         //validaciones para el id de sector
         if (id_sector) {
@@ -109,7 +129,7 @@ const actualizarEquipamiento = async (req, res) => {
 
             const resp = await db.getSectorPorId(parseInt(id_sector));
             if (!resp || !resp.estado) {
-                await db.disconnect();
+                
                 return res.status(400).json({
                     errors: [{
                         msg: 'No existe un sector con ese id'
@@ -119,7 +139,7 @@ const actualizarEquipamiento = async (req, res) => {
         }
 
         const equipamiento = await db.actualizarEquipamiento(id, { nombre, id_sector });
-        await db.disconnect();
+        
         res.json({
             msg: 'Equipamiento actualizado con exito!',
             equipamiento
@@ -140,7 +160,7 @@ const bajaEquipamiento = async (req, res) => {
 
     try {
         const db = new DataBase();
-        await db.connect();
+        
 
         //Ademas de dar de baja el equipamiento/maquinaria
         await db.eliminarEquipamiento(id);
@@ -151,7 +171,7 @@ const bajaEquipamiento = async (req, res) => {
             await db.eliminarAlarmaMantenimiento(alarma.id);
         }
 
-        await db.disconnect();
+        
         res.json({
             msg: 'Equipamiento eliminado con exito!'
         });
@@ -171,11 +191,11 @@ const crearAlarmaDeMantenimiento = async (req, res) => {
     console.log(fecha, hora)
     try {
         const db = new DataBase();
-        await db.connect();
+        
 
         const alarma = await db.crearAlarmaMantenimiento(fecha, hora, id);
 
-        await db.disconnect();
+        
         res.status(201).json({
             alarma
         });
@@ -195,6 +215,7 @@ module.exports = {
     bajaEquipamiento,
     crearAlarmaDeMantenimiento,
     obtenerAlarmaDeEquipamiento,
+    obtenerAlarmaDeJuezMaquinaria,
     obtenerEquipamientoPorId,
     obtenerEquipamientos,
 }

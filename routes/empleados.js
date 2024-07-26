@@ -3,9 +3,9 @@ const { check } = require('express-validator');
 
 const { validarCampos, validarJWT, esJefeDeMantenimiento } = require('../middlewares');
 
-const { correoEmpleadoExiste, existeEmpleadoPorId } = require('../helpers');
+const { correoEmpleadoExiste, existeEmpleadoPorId, telefonoEmpleadoExiste } = require('../helpers');
 
-const { crearEmpleado, actualizarEmpleado, eliminarEmpleado, obtenerEmpleados } = require('../controllers');
+const { crearEmpleado, actualizarEmpleado, eliminarEmpleado, obtenerEmpleados, obtenerEmpleadoById } = require('../controllers');
 
 const router = Router();
 
@@ -16,6 +16,16 @@ router.get('/', [
     esJefeDeMantenimiento,
     validarCampos
 ], obtenerEmpleados)
+
+
+//obtener empleado por ID
+router.get('/:id', [
+    //VALIDACIONES DEL ENDPOINT
+    validarJWT,
+    esJefeDeMantenimiento,
+    check('id').custom(existeEmpleadoPorId),
+    validarCampos
+], obtenerEmpleadoById)
 
 //crear empleado
 router.post('/', [
@@ -30,10 +40,15 @@ router.post('/', [
     check('nombre', 'El nombre debe tener minimo 2 caracteres').isLength({ min: 2 }),
     check('nombre', 'El nombre debe tener maximo 46 caracteres').isLength({ max: 65 }),
 
-    check('email').escape().trim(),
     check('email', 'El correo es obligatorio').not().isEmpty(),
     check('email', 'El correo ingresado, no es un correo valido').isEmail(),
     check('email').custom(correoEmpleadoExiste),
+    
+    check('telefono').escape().trim(),
+    check('telefono', 'Proporcione un telefono, es obligatorio').not().isEmpty(),
+    check('telefono', 'El telefono ingresado, no es un telefono valido').isMobilePhone(),
+    check('telefono').custom(telefonoEmpleadoExiste),
+
     validarCampos,
 ], crearEmpleado);
 
@@ -45,6 +60,10 @@ router.put('/:id', [
     check('id', 'El ID debe ser un numero').isNumeric(),
     check('id', 'El ID debe ser un numero').isInt(),
     check('id').custom(existeEmpleadoPorId),
+
+    check('telefono', 'El telefono ingresado, no es un telefono valido').optional().isMobilePhone(),
+    check('telefono').optional().custom(telefonoEmpleadoExiste),
+
     validarCampos,
 ], actualizarEmpleado);
 

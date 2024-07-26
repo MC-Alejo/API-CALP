@@ -10,18 +10,18 @@ const obtenerUsuarios = async (req = request, res = response) => {
         const { correo, rol } = req.query;
 
         const db = new DataBase();
-        await db.connect();
+        
 
         if (correo) {
             const usuario = await db.getUsuarioPorCorreo(correo);
             if (!usuario || usuario.estado === false) {
-                await db.disconnect();
+                
                 return res.json({});
             }
             const rol = await db.getRol(usuario.id)
             const { nombre, apellido, email } = usuario;
 
-            await db.disconnect();
+            
 
             return res.json({
                 usuario: {
@@ -38,7 +38,7 @@ const obtenerUsuarios = async (req = request, res = response) => {
 
             if (rol === 'EA') {
                 const usuario = await db.getEncargadosArea();
-                await db.disconnect();
+                
                 return res.json({
                     usuario
                 });
@@ -46,7 +46,7 @@ const obtenerUsuarios = async (req = request, res = response) => {
 
             if (rol === 'GO') {
                 const usuario = await db.getGerentesOperativos();
-                await db.disconnect();
+                
                 return res.json({
                     usuario
                 });
@@ -54,7 +54,7 @@ const obtenerUsuarios = async (req = request, res = response) => {
 
             if (rol === 'JM') {
                 const usuario = await db.getJefesMantenimiento();
-                await db.disconnect();
+                
                 return res.json({
                     usuario
                 });
@@ -63,7 +63,7 @@ const obtenerUsuarios = async (req = request, res = response) => {
 
         const usuarios = await db.getUsuarios();
 
-        await db.disconnect();
+        
 
         res.json({
             usuarios
@@ -86,17 +86,17 @@ const obtenerUsuarioPorID = async (req = request, res = response) => {
         const { id } = req.params;
 
         const db = new DataBase();
-        await db.connect();
+        
 
         const usuario = await db.getUsuarioPorId(id);
         if (!usuario || usuario.estado === false) {
-            await db.disconnect();
+            
             return res.json({});
         }
         const rol = await db.getRol(id)
         const { nombre, apellido, email } = usuario;
 
-        await db.disconnect();
+        
 
         res.json({
             usuario: {
@@ -121,18 +121,18 @@ const obtenerUsuarioPorID = async (req = request, res = response) => {
 const crearUsuario = async (req = request, res = response) => {
 
     try {
-        const { nombre, apellido, email, password, rol, id_area, id_deposito } = req.body;
+        const { nombre= '', apellido = '', email = '', password, rol, id_area, id_deposito } = req.body;
 
         const usuario = {
-            nombre,
-            apellido,
-            email,
+            nombre: nombre[0].toUpperCase() + nombre.slice(1).toLowerCase(),
+            apellido: apellido[0].toUpperCase() + apellido.slice(1).toLowerCase(),
+            email: email.toLowerCase(),
             password
         };
 
         // guardar en BD
         const db = new DataBase();
-        await db.connect(); // conecto a la bd
+        
 
         // encriptar la contraseña
         const salt = bcryptjs.genSaltSync(); // numero de vueltas para encriptar (por defecto 10) mientras mas vueltas mas seguro pero mas lento
@@ -144,7 +144,7 @@ const crearUsuario = async (req = request, res = response) => {
         // asignar rol al usuario
         await db.asignarRol(resp.id, rol, id_area, id_deposito);
 
-        await db.disconnect(); // desconecto de la bd una vez realizado todo
+        
 
         //se devuelve el usuario creado
         res.status(201).json({
@@ -209,11 +209,11 @@ const actualizarUsuario = async (req = request, res = response) => {
             }
 
             const db = new DataBase();
-            await db.connect();
+            
 
-            const resp = await db.getUsuarioPorCorreo(email);
+            const resp = await db.getUsuarioPorCorreo(email.toLowerCase());
             if (resp) {
-                await db.disconnect();
+                
                 return res.status(400).json({
                     errors: [{
                         msg: 'El email ingresado ya existe en la BD'
@@ -221,7 +221,7 @@ const actualizarUsuario = async (req = request, res = response) => {
                 });
             }
 
-            await db.disconnect();
+            
         }
 
         let passwordCrypt = null;
@@ -240,11 +240,16 @@ const actualizarUsuario = async (req = request, res = response) => {
         }
 
         const db = new DataBase();
-        await db.connect();
 
-        const { password: pass, estado, ...resp } = await db.actualizarUsuario(id, { nombre, apellido, email, password: passwordCrypt });
+        const usuario = {
+            nombre: (nombre) ? nombre[0].toUpperCase() + nombre.slice(1).toLowerCase() : null,
+            apellido: (apellido) ? apellido[0].toUpperCase() + apellido.slice(1).toLowerCase() : null,
+            email: (email) ? email.toLowerCase() : null,
+            password: passwordCrypt
+        };
 
-        await db.disconnect();
+        const { password: pass, estado, ...resp } = await db.actualizarUsuario(id, usuario);
+
 
         res.json({
             usuario: resp
@@ -278,11 +283,11 @@ const actualizarAreaDelEncargado = async (req = request, res = response) => {
 
 
         const db = new DataBase();
-        await db.connect();
+        
 
         await db.updateAreaDeEncargado(id, id_area);
 
-        await db.disconnect();
+        
 
         res.json({
             msg: 'El area del encargado se actualizo con exito'
@@ -316,11 +321,11 @@ const demitirAreaAEncargado = async (req = request, res = response) => {
 
 
         const db = new DataBase();
-        await db.connect();
+        
 
         await db.demitirAreaAEncargado(id);
 
-        await db.disconnect();
+        
 
         res.json({
             msg: 'El area del encargado dimitió con exito'
@@ -353,7 +358,7 @@ const eliminarUsuario = async (req = request, res = response) => {
         const usuarioRol = await obtenerRol(id)
 
         const db = new DataBase();
-        await db.connect();
+        
 
         if (usuarioRol === 'EA') {
             await db.demitirAreaAEncargado(id)
@@ -361,7 +366,7 @@ const eliminarUsuario = async (req = request, res = response) => {
 
         await db.eliminarUsuario(id);
 
-        await db.disconnect();
+        
 
         res.json({
             msg: "Usuario desactivado con éxito"

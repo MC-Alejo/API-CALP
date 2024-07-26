@@ -4,9 +4,9 @@ const { DataBase } = require("../models");
 const obtenerSectores = async (req, res) => {
     try {
         const db = new DataBase();
-        await db.connect();
+        
         const sectores = await db.getSectores();
-        await db.disconnect();
+        
         res.json({
             sectores
         });
@@ -25,9 +25,9 @@ const obtenerSectorPorId = async (req, res) => {
     const { id } = req.params;
     try {
         const db = new DataBase();
-        await db.connect();
+        
         const sector = await db.getSectorPorId(id);
-        await db.disconnect();
+        
         res.json({
             sector: {
                 id: sector.id,
@@ -51,9 +51,9 @@ const obtenerMaquinariasPorSector = async (req, res) => {
     const { id } = req.params;
     try {
         const db = new DataBase();
-        await db.connect();
+        
         const maquinarias = await db.getEquipamientosPorSector(id);
-        await db.disconnect();
+        
         res.json({
             maquinarias
         });
@@ -95,11 +95,11 @@ const actualizarSector = async (req, res) => {
     try {
 
         const db = new DataBase();
-        await db.connect();
+        
 
         if (id_area) {
             if (isNaN(parseInt(id_area))) {
-                await db.disconnect();
+                
                 return res.status(400).json({
                     errors: [{
                         msg: 'El area debe ser un numero entero'
@@ -109,7 +109,7 @@ const actualizarSector = async (req, res) => {
             //validaciones para el id de area
             const resp = await db.getAreaPorId(parseInt(id_area));
             if (!resp || !resp.estado) {
-                await db.disconnect();
+                
                 return res.status(400).json({
                     errors: [{
                         msg: 'No existe un area con ese id'
@@ -119,7 +119,7 @@ const actualizarSector = async (req, res) => {
         }
 
         const sector = await db.actualizarSector(id, { nombre, id_area });
-        await db.disconnect();
+        
         res.json({
             msg: 'Sector actualizado con exito!',
             sector
@@ -140,12 +140,12 @@ const bajaSector = async (req, res) => {
 
     try {
         const db = new DataBase();
-        await db.connect();
+        
 
         //Ademas de dar de baja el sector deberia de dar de baja las maquinarias pertenecientes al mismo?
         await db.eliminarSector(id);
 
-        await db.disconnect();
+        
         res.json({
             msg: 'Sector eliminado con exito!'
         });
@@ -166,9 +166,9 @@ const crearEquipamientoSector = async (req, res) => {
 
     try {
         const db = new DataBase();
-        await db.connect();
+        
         const equipamiento = await db.crearEquipamiento(nombre, id);
-        await db.disconnect();
+        
         res.status(201).json({
             equipamiento
         });

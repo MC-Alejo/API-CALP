@@ -2,155 +2,201 @@ const { DataBase } = require("../models");
 
 //obtener todas las alarmas
 const obtenerAlarmas = async (req, res) => {
-    try {
-        const db = new DataBase();
-        await db.connect();
+  try {
+    const db = new DataBase();
 
-        const alarmas = await db.getAlarmas();
-        await db.disconnect();
-        res.json({
-            alarmas
-        });
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({
-            errors: [{
-                msg: 'Error al obtener las alarmas'
-            }]
-        });
+    const alarmas = await db.getAlarmas();
+
+    res.json({
+      alarmas,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      errors: [
+        {
+          msg: "Error al obtener las alarmas",
+        },
+      ],
+    });
+  }
+};
+
+const obtenerAlarmaPorId = async (req, res = response) => {
+  const { id } = req.params;
+  try {
+    const db = new DataBase();
+
+    const alarma = await db.getAlarma(id);
+
+    if (!alarma) {
+      return res
+        .status(400)
+        .json({ errors: [{ msg: "No existe una alarma con ese id" }] });
     }
-}
 
-//obtener alarma por id
-const obtenerAlarmaPorId = async (req, res) => {
-    const { id } = req.params;
+    return res.json({
+      alarma,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      msg: "Error al obtener tarea por id",
+    });
+  }
+};
 
-    try {
-        const db = new DataBase();
-        await db.connect();
+//obtener todas las alarmas de forma ordenada
+const obtenerAlarmasOrdenadas = async (req, res) => {
+  try {
+    const db = new DataBase();
 
-        const alarma = await db.getAlarma(id);
-        await db.disconnect();
-        res.json({
-            alarma
-        });
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({
-            errors: [{
-                msg: 'Error al obtener la alarma'
-            }]
-        });
-    }
-}
+    const alarmas = await db.getAlarmasOrdenadas();
+
+    res.json({
+      alarmas,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      errors: [
+        {
+          msg: "Error al obtener las alarmas",
+        },
+      ],
+    });
+  }
+};
+
+//obtener las alarmas de un juez
+const obtenerAlarmasJuez = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const db = new DataBase();
+
+    //leer el usuario que corresponde al id
+    const alarma = await db.getAlarmasPorJuez(id);
+
+    res.json({
+      alarma,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      errors: [
+        {
+          msg: "Error al obtener la alarma de mantenimiento",
+        },
+      ],
+    });
+  }
+};
 
 const actualizarAlarmaMantenimiento = async (req, res) => {
-    const { id } = req.params;
-    const { fecha, hora } = req.body;
-    // validamos que venga la fecha y la hora
-    if (!fecha && !hora) {
+  const { id } = req.params;
+  const { prioridad, descripcion = "", fecha } = req.body;
+
+  if (!descripcion && !prioridad && !fecha) {
+    return res.status(400).json({
+      errors: [{ msg: "Debe enviar al menos un campo para actualizar" }],
+    });
+  }
+
+  try {
+    if (descripcion !== "") {
+      if (descripcion.length < 10) {
         return res.status(400).json({
-            errors: [{
-                msg: 'Falta la fecha o la hora'
-            }]
-        })
-    }
-
-
-    if (fecha) {
-        //validar que la fecha sea tipo Date y el formato de la fecha sea AAAA-MM-DD
-        if (!Date.parse(fecha)) {
-            return res.status(400).json({
-                errors: [{
-                    msg: 'La fecha debe ser una fecha valida'
-                }]
-            })
-        }
-
-        //verificar si es una fecha valida
-        const fechaArray = fecha.split('-');
-        const anio = fechaArray[0];
-        const mes = fechaArray[1];
-        const dia = fechaArray[2];
-        const fechaValida = new Date(anio, mes - 1, dia);
-
-        if (dia != fechaValida.getDate() || mes != fechaValida.getMonth() + 1 || anio != fechaValida.getFullYear()) {
-            return res.status(400).json({
-                errors: [{
-                    msg: 'La fecha debe ser una fecha valida'
-                }]
-            })
-        }
-    }
-
-    //validar que la hora sea tipo Time y el formato de la hora sea HH:MM
-    if (hora) {
-        //manejo especial para verificar que es del tipo Time
-        if (!Date.parse(`01/01/2023 ${hora}`)) {
-            return res.status(400).json({
-                errors: [{
-                    msg: 'La hora debe ser una hora valida'
-                }]
-            })
-        }
-
-        //verificar si es una hora valida
-        const horaArray = hora.split(':');
-        const horaValida = new Date(`01/01/2021 ${hora}`);
-
-        if (horaArray[0] != horaValida.getHours() || horaArray[1] != horaValida.getMinutes()) {
-            return res.status(400).json({
-                errors: [{
-                    msg: 'La hora debe ser una hora valida'
-                }]
-            })
-        }
-    }
-
-    try {
-        const db = new DataBase();
-        await db.connect();
-        const alarma = await db.actualizarAlarmaMantenimiento(id, { fecha, hora });
-        await db.disconnect();
-        res.json({
-            msg: 'Alarma de mantenimiento actualizada con exito',
-            alarma
+          errors: [{ msg: "La descripcion debe tener mas de 10 caracteres" }],
         });
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({
-            errors: [{
-                msg: 'Error al actualizar la alarma de mantenimiento'
-            }]
+      }
+      if (descripcion.length > 250) {
+        return res.status(400).json({
+          errors: [
+            { msg: "La descripcion debe tener menos de 250 caracteres" },
+          ],
         });
+      }
     }
-}
+
+    if (prioridad) {
+      if (prioridad < 1 || prioridad > 3) {
+        return res.status(400).json({
+          errors: [{ msg: "La prioridad debe ser un numero entre 1 y 3" }],
+        });
+      }
+    }
+
+    const db = new DataBase();
+
+    const tareaActualizada = await db.actualizarAlarma(id, {
+      prioridad,
+      descripcion,
+      fecha,
+    });
+
+    return res.json({
+      msg: "Alarma actualizada correctamente",
+      alarma: tareaActualizada,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      errors: [
+        {
+          msg: "Error al actualizar la alarma de mantenimiento",
+        },
+      ],
+    });
+  }
+};
 
 const eliminarAlarmaMantenimiento = async (req, res) => {
-    const { id } = req.params;
+  const { id } = req.params;
 
-    try {
-        const db = new DataBase();
-        await db.connect();
-        const resp = await db.eliminarAlarmaMantenimiento(id);
-        await db.disconnect();
-        res.json({
-            msg: 'Alarma de mantenimiento eliminada con exito',
-        });
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({
-            errors: [{
-                msg: 'Error al eliminar la alarma de mantenimiento'
-            }]
-        });
+  try {
+    const db = new DataBase();
+
+    const alarma = await db.getAlarma(id);
+    if (!alarma) {
+      return res
+        .status(400)
+        .json({ errors: [{ msg: "No existe una alarma con ese id" }] });
     }
-}
 
+    const solicitud = await db.getSolicitudPorId(alarma.id_solicitud);
+
+    if (!solicitud) {
+      return res.status(400).json({
+        errors: [
+          {
+            msg: "Ha ocurrido un problema al eliminar la solicitud de la alarma",
+          },
+        ],
+      });
+    }
+
+    const resp = await db.eliminarAlarmaMantenimiento(id, solicitud.id);
+
+    res.json({
+      msg: "Alarma de mantenimiento eliminada con exito",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      errors: [
+        {
+          msg: "Error al eliminar la alarma de mantenimiento",
+        },
+      ],
+    });
+  }
+};
 
 module.exports = {
-    actualizarAlarmaMantenimiento,
-    eliminarAlarmaMantenimiento,
-    obtenerAlarmaPorId,
-    obtenerAlarmas,
-}
+  actualizarAlarmaMantenimiento,
+  eliminarAlarmaMantenimiento,
+  obtenerAlarmaPorId,
+  obtenerAlarmas,
+  obtenerAlarmasJuez,
+  obtenerAlarmasOrdenadas,
+};

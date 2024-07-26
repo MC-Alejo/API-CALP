@@ -1,42 +1,53 @@
-const { Router } = require('express');
-const { check } = require('express-validator');
-
-const { validarCampos, validarJWT, esJefeDeMantenimiento } = require('../middlewares');
-
-const { existeEquipamientoPorId, existeAlarmaMantenimiento } = require('../helpers');
+const { Router } = require("express");
+const { check } = require("express-validator");
 
 const {
-    actualizarEquipamiento,
-    bajaEquipamiento,
-    crearAlarmaDeMantenimiento,
-    obtenerEquipamientos,
-    obtenerAlarmaDeEquipamiento,
-    obtenerEquipamientoPorId
-} = require('../controllers');
+  validarCampos,
+  validarJWT,
+  esJefeDeMantenimiento,
+} = require("../middlewares");
 
+const {
+  existeEquipamientoPorId,
+  validarFecha,
+} = require("../helpers");
+
+const {
+  actualizarEquipamiento,
+  bajaEquipamiento,
+  cargarAlarma,
+  obtenerAlarmaDeEquipamiento,
+  obtenerEquipamientoPorId,
+  obtenerEquipamientos,
+  obtenerAlarmaDeJuezMaquinaria,
+} = require("../controllers");
 const router = Router();
 
 //obtener todos los equipamientos
-router.get('/', [
+router.get(
+  "/",
+  [
     //VALIDACIONES DEL ENDPOINT
     validarJWT,
     esJefeDeMantenimiento,
     validarCampos,
-], obtenerEquipamientos);
+  ], obtenerEquipamientos);
 
 //obtener maquinaria por id
-router.get('/:id', [
+router.get(
+  "/:id",
+  [
     //VALIDACIONES DEL ENDPOINT
     validarJWT,
     esJefeDeMantenimiento,
-    check('id', 'El ID debe ser un numero').isNumeric(),
-    check('id', 'El ID debe ser un numero').isInt(),
-    check('id').custom(existeEquipamientoPorId),
+    check("id", "El ID debe ser un numero").isNumeric(),
+    check("id", "El ID debe ser un numero").isInt(),
+    check("id").custom(existeEquipamientoPorId),
     validarCampos,
-], obtenerEquipamientoPorId);
+  ], obtenerEquipamientoPorId);
 
-//obtener la alarma de una maquinaria
-router.get('/:id/alarma', [
+
+router.get('/:id/alarmas', [
     //VALIDACIONES DEL ENDPOINT
     validarJWT,
     esJefeDeMantenimiento,
@@ -46,27 +57,49 @@ router.get('/:id/alarma', [
     validarCampos,
 ], obtenerAlarmaDeEquipamiento);
 
+
+// obtener la alarma de una maquinaria segun el juez
+router.get('/:id/alarmas/juez/:id_juez', [
+  //VALIDACIONES DEL ENDPOINT
+  validarJWT,
+  esJefeDeMantenimiento,
+  check('id', 'El ID debe ser un numero').isNumeric(),
+  check('id', 'El ID debe ser un numero').isInt(),
+  check('id').custom(existeEquipamientoPorId),
+
+  check('id_juez', 'El ID es obligatorio').not().isEmpty(),
+  check('id_juez', 'El ID no es un formato valido').isUUID(),
+
+  validarCampos,
+], obtenerAlarmaDeJuezMaquinaria);
+
+
 //Actualizar equipamiento (nombre y sector al que pertenece)
-router.put('/:id', [
+router.put(
+  "/:id",
+  [
     //VALIDACIONES DEL ENDPOINT
     validarJWT,
     esJefeDeMantenimiento,
-    check('id', 'El ID debe ser un numero').isNumeric(),
-    check('id', 'El ID debe ser un numero').isInt(),
-    check('id').custom(existeEquipamientoPorId),
+    check("id", "El ID debe ser un numero").isNumeric(),
+    check("id", "El ID debe ser un numero").isInt(),
+    check("id").custom(existeEquipamientoPorId),
     validarCampos,
-], actualizarEquipamiento);
+  ], actualizarEquipamiento);
 
 //Dar de baja equipamiento de un sector
-router.delete('/:id', [
+router.delete(
+  "/:id",
+  [
     //VALIDACIONES DEL ENDPOINT
     validarJWT,
     esJefeDeMantenimiento,
-    check('id', 'El ID debe ser un numero').isNumeric(),
-    check('id', 'El ID debe ser un numero').isInt(),
-    check('id').custom(existeEquipamientoPorId),
+    check("id", "El ID debe ser un numero").isNumeric(),
+    check("id", "El ID debe ser un numero").isInt(),
+    check("id").custom(existeEquipamientoPorId),
     validarCampos,
-], bajaEquipamiento);
+  ], bajaEquipamiento);
+
 
 //Dar de alta una alarma de mantenimiento a un equipamiento
 router.post('/:id', [
@@ -76,12 +109,25 @@ router.post('/:id', [
     check('id', 'El ID debe ser un numero').isNumeric(),
     check('id', 'El ID debe ser un numero').isInt(),
     check('id').custom(existeEquipamientoPorId),
-    check('id').custom(existeAlarmaMantenimiento),
+
     check('fecha', 'La fecha de alarma es obligatoria').not().isEmpty(),
-    check('hora', 'La hora de alarma es obligatoria').not().isEmpty(),
     check('fecha', 'El formato de la fecha no es valido').isDate(),
-    check('hora', 'El formato de la hora no es valido').isTime(),
+    check('fecha').custom(validarFecha),
+
+    //descripcion de la solicitud
+    check('desc_soli', 'La descripcion debe tener mas de 10 caracteres').optional().isLength({ min: 10 }),
+    check('desc_soli', 'La descripcion debe tener menos de 250 caracteres').optional().isLength({ max: 250 }),
+    
+    //descripcion de la tarea
+    check('descripcion', 'La descripcion debe tener mas de 10 caracteres').optional().isLength({ min: 10 }),
+    check('descripcion', 'La descripcion debe tener menos de 250 caracteres').optional().isLength({ max: 250 }),
+
+    //prioridad
+    check('prioridad', 'El ID debe ser un numero').optional().isNumeric(),
+    check('prioridad', 'El ID debe ser un numero').optional().isInt(),
+    check('prioridad', 'La prioridad debe ser un numero entre 1 y 3').optional().isInt({ min: 1, max: 3 }), // 1 (alta), 2 (media), 3 (baja)
+
     validarCampos,
-], crearAlarmaDeMantenimiento);
+], cargarAlarma);
 
 module.exports = router;
