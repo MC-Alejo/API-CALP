@@ -1,5 +1,11 @@
 # Historial de Cambios
 
+## [2.0.1] - 2024-07-27
+
+### Added
+
+- Restricción adicional al editar/finalizar/eliminar tareas y alarmas (El juez o GO solo pueden)
+
 ## [2.0.0] - 2024-07-26
 
 ### Added
