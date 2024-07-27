@@ -1,7 +1,7 @@
 const { Router } = require('express');
 const { check } = require('express-validator');
 
-const { validarCampos, validarJWT, esJefeDeMantenimiento, esGerente } = require('../middlewares');
+const { validarCampos, validarJWT, esJefeDeMantenimiento, esGerente, esJuezEsGo } = require('../middlewares');
 
 const { existeTareaPorId, tareaPorIdFinalizo, existeInventarioPorId, existeEmpleadoPorId, existeEquipamientoPorId, tareaTieneResponsable } = require('../helpers');
 
@@ -148,8 +148,8 @@ router.put('/:id', [
     check('id', 'El ID debe ser un numero').isNumeric(),
     check('id', 'El ID debe ser un numero').isInt(),
     check('id').custom(tareaPorIdFinalizo),
-
     validarCampos,
+    esJuezEsGo,
 ], actualizarTarea);
 
 //finalizar tarea
@@ -160,8 +160,8 @@ router.patch('/:id', [
     check('id', 'El ID debe ser un numero').isNumeric(),
     check('id', 'El ID debe ser un numero').isInt(),
     check('id').custom(tareaTieneResponsable),
-
     validarCampos,
+    esJuezEsGo,
 ], finalizarTarea);
 
 //agregar inventario a tarea
@@ -183,6 +183,7 @@ router.post('/:id', [
     check('cantidad', 'La cantidad debe ser un numero').isInt(),
     check('cantidad', 'La cantidad debe mayor a 0').isInt({ gt: 0 }),
     validarCampos,
+    esJuezEsGo,
 ], agregarInventarioATarea)
 
 module.exports = router;

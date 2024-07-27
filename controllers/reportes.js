@@ -20,11 +20,13 @@ const realizarReporte = async (req = request, res = response) => {
     } = req.query;
     const db = new DataBase();
 
-    let estadoTratado = null;
-    let intervaloTratado = null;
-    let responsableTratado = null;
-    let areaTratada = null;
-    let equipamientoTrado = null;
+    const variablesTratadas = {
+      estadoTratado: null,
+      intervaloTratado: null,
+      responsableTratado: null,
+      areaTratada: null,
+      equipamientoTrado: null,
+    };
 
     //validaciones y trato de los datos x querys ----------------------------------------------------------------
     if (estado) {
@@ -38,7 +40,7 @@ const realizarReporte = async (req = request, res = response) => {
         });
       }
 
-      estadoTratado =
+      variablesTratadas.estadoTratado =
         estado.toUpperCase() === "F" ? "'finalizada'" : "'en curso'";
     }
 
@@ -53,7 +55,7 @@ const realizarReporte = async (req = request, res = response) => {
         });
       }
 
-      intervaloTratado =
+      variablesTratadas.intervaloTratado =
         intervalo.toUpperCase() === "T"
           ? "T"
           : intervalo.toUpperCase() === "W"
@@ -78,7 +80,7 @@ const realizarReporte = async (req = request, res = response) => {
           });
         }
 
-        responsableTratado = resp.id;
+        variablesTratadas.responsableTratado = resp.id;
       } else {
         return res.status(400).json({
           errors: [
@@ -105,7 +107,7 @@ const realizarReporte = async (req = request, res = response) => {
           });
         }
 
-        areaTratada = resp.id;
+        variablesTratadas.areaTratada = resp.id;
       } else {
         return res.status(400).json({
           errors: [
@@ -119,11 +121,11 @@ const realizarReporte = async (req = request, res = response) => {
 
     if (equipamiento) {
       if (!isNaN(Number(equipamiento))) {
-        if (areaTratada) {
+        if (variablesTratadas.areaTratada) {
           const db = new DataBase();
 
           const resp = await db.existeEquipamientoEnArea(
-            areaTratada,
+            variablesTratadas.areaTratada,
             Number(equipamiento)
           );
 
@@ -137,7 +139,7 @@ const realizarReporte = async (req = request, res = response) => {
             });
           }
 
-          equipamientoTrado = resp.id_equipo;
+          variablesTratadas.equipamientoTrado = resp.id_equipo;
         } else {
           const db = new DataBase();
 
@@ -153,7 +155,7 @@ const realizarReporte = async (req = request, res = response) => {
             });
           }
 
-          equipamientoTrado = resp.id;
+          variablesTratadas.equipamientoTrado = resp.id;
         }
       } else {
         return res.status(400).json({
@@ -170,11 +172,11 @@ const realizarReporte = async (req = request, res = response) => {
 
     //construyo mi objeto de opciones con los datos tratados
     const options = {
-      estado: estadoTratado,
-      intervalo: intervaloTratado,
-      responsable: responsableTratado,
-      area: areaTratada,
-      equipamiento: equipamientoTrado,
+      estado: variablesTratadas.estadoTratado,
+      intervalo: variablesTratadas.intervaloTratado,
+      responsable: variablesTratadas.responsableTratado,
+      area: variablesTratadas.areaTratada,
+      equipamiento: variablesTratadas.equipamientoTrado,
     };
 
     //generar reporte

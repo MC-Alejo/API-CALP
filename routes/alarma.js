@@ -3,7 +3,7 @@ const { Router } = require('express');
 const { check } = require('express-validator');
 
 
-const { validarCampos, validarJWT, esJefeDeMantenimiento } = require('../middlewares');
+const { validarCampos, validarJWT, esJefeDeMantenimiento, esJuezEsGoAlarma } = require('../middlewares');
 
 const { validarFecha, existeAlarma } = require('../helpers');
 
@@ -72,6 +72,7 @@ router.put('/:id', [
     check('prioridad', 'La prioridad debe ser un numero entre 1 y 3').optional().isInt({ min: 1, max: 3 }), // 1 (alta), 2 (media), 3 (baja)
 
     validarCampos,
+    esJuezEsGoAlarma,
 ], actualizarAlarmaMantenimiento);
 
 
@@ -84,6 +85,7 @@ router.delete('/:id', [
     check('id', 'El ID debe ser un numero').isInt(),
     check('id').custom(existeAlarma),
     validarCampos,
+    esJuezEsGoAlarma,
 ], eliminarAlarmaMantenimiento);
 
 

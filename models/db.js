@@ -991,6 +991,48 @@ class DataBase {
     return resp.rows;
   }
 
+  async getJuezDeTarea(id) {
+    const text = `
+    SELECT
+        tar.id AS id_tarea,
+        tar.estado AS tarea_estado,
+        s.id AS id_solicitud,
+        s.id_juez AS id_juez
+    FROM solicitud s
+    JOIN tarea tar
+    ON tar.id_solicitud = s.id
+    JOIN usuario userJ
+    ON s.id_juez = userJ.id
+    WHERE
+    tar.fecha <= date(now()) AND tar.id = $1
+    `;
+    const values = [id];
+
+    const resp = await this.client.query(text, values);
+    return resp.rows[0];
+  }
+
+  async getJuezDeAlarma(id) {
+    const text = `
+    SELECT
+        tar.id AS id_tarea,
+        tar.estado AS tarea_estado,
+        s.id AS id_solicitud,
+        s.id_juez AS id_juez
+    FROM solicitud s
+    JOIN tarea tar
+    ON tar.id_solicitud = s.id
+    JOIN usuario userJ
+    ON s.id_juez = userJ.id
+    WHERE
+    tar.fecha > date(now()) AND tar.id = $1
+    `;
+    const values = [id];
+
+    const resp = await this.client.query(text, values);
+    return resp.rows[0];
+  }
+
   async crearTarea(
     estado,
     fecha,
