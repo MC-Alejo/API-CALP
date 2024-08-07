@@ -1,6 +1,12 @@
 # Historial de Cambios
 
-## [2.1.1] - 2024-07-27
+## [2.1.2] - 2024-08-07
+
+### Change
+
+- Endpoint para obtener solicitudes de un usuario devuelve las solicitudes de manera ordenada (por fecha)
+
+## [2.1.1] - 2024-08-07
 
 ### Change
 

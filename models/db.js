@@ -841,7 +841,8 @@ class DataBase {
     JOIN sector sec ON sec.id = maq.id_sector
     LEFT JOIN usuario usuJuez ON soli.id_juez = usuJuez.id
     JOIN usuario usuSolicitante ON soli.id_usuario = usuSolicitante.id
-    WHERE soli.id_usuario = $1`;
+    WHERE soli.id_usuario = $1
+    ORDER BY soli.fecha DESC`;
     const values = [id];
 
     if (estado !== "") {
