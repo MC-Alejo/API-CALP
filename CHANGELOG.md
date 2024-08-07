@@ -6,7 +6,7 @@
 
 - Se modifico los formatos de las respuestas JSON de las solicitudes
 
-## Fixed
+### Fixed
 
 - Bug que impedía que los Encargados de un Área puedan visualizar información de la tarea de una solicitud específica.
 
