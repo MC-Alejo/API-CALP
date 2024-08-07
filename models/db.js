@@ -766,25 +766,106 @@ class DataBase {
   // ----------------- Querys de las solicitudes: -----------------
 
   async getSolicitudes() {
-    const text = "SELECT * FROM solicitud";
+    const text = `
+    SELECT
+      soli.id AS id_solicitud,
+      soli.descripcion AS descripcion,
+      soli.estado AS estado,
+      soli.fecha AS fecha,
+      soli.id_juez AS id_juez,
+      usuJuez.nombre AS nombre_juez,
+      usuJuez.apellido AS apellido_juez,
+      soli.id_usuario AS id_usuario_soli,
+      usuSolicitante.nombre AS nombre_solicitante,
+      usuSolicitante.apellido AS apellido_solicitante,
+      soli.id_equipamiento AS id_equipamiento,
+      maq.nombre AS nombre_equipamiento,
+      sec.id AS id_sector,
+      sec.nombre AS nombre_sector
+    FROM solicitud soli
+    JOIN equipamiento maq ON maq.id = soli.id_equipamiento
+    JOIN sector sec ON sec.id = maq.id_sector
+    LEFT JOIN usuario usuJuez ON soli.id_juez = usuJuez.id
+    JOIN usuario usuSolicitante ON soli.id_usuario = usuSolicitante.id
+    `;
     const resp = await this.client.query(text);
     return resp.rows;
   }
 
   async getSolicitudesOrdenadas() {
-    const text =
-      "SELECT * FROM solicitud ORDER BY CASE WHEN estado = 'pendiente' THEN 0 ELSE 1 END, fecha DESC";
+    const text = `
+    SELECT
+      soli.id AS id_solicitud,
+      soli.descripcion AS descripcion,
+      soli.estado AS estado,
+      soli.fecha AS fecha,
+      soli.id_juez AS id_juez,
+      usuJuez.nombre AS nombre_juez,
+      usuJuez.apellido AS apellido_juez,
+      soli.id_usuario AS id_usuario_soli,
+      usuSolicitante.nombre AS nombre_solicitante,
+      usuSolicitante.apellido AS apellido_solicitante,
+      soli.id_equipamiento AS id_equipamiento,
+      maq.nombre AS nombre_equipamiento,
+      sec.id AS id_sector,
+      sec.nombre AS nombre_sector
+    FROM solicitud soli
+    JOIN equipamiento maq ON maq.id = soli.id_equipamiento
+    JOIN sector sec ON sec.id = maq.id_sector
+    LEFT JOIN usuario usuJuez ON soli.id_juez = usuJuez.id
+    JOIN usuario usuSolicitante ON soli.id_usuario = usuSolicitante.id
+    ORDER BY CASE WHEN soli.estado = 'pendiente' THEN 0 ELSE 1 END, soli.fecha DESC
+    `;
     const resp = await this.client.query(text);
     return resp.rows;
   }
 
   async getSolicitudesPorIdUsuario(id, estado = "") {
-    const text = "SELECT * FROM solicitud WHERE id_usuario = $1";
+    const text = `SELECT
+      soli.id AS id_solicitud,
+      soli.descripcion AS descripcion,
+      soli.estado AS estado,
+      soli.fecha AS fecha,
+      soli.id_juez AS id_juez,
+      usuJuez.nombre AS nombre_juez,
+      usuJuez.apellido AS apellido_juez,
+      soli.id_usuario AS id_usuario_soli,
+      usuSolicitante.nombre AS nombre_solicitante,
+      usuSolicitante.apellido AS apellido_solicitante,
+      soli.id_equipamiento AS id_equipamiento,
+      maq.nombre AS nombre_equipamiento,
+      sec.id AS id_sector,
+      sec.nombre AS nombre_sector
+    FROM solicitud soli
+    JOIN equipamiento maq ON maq.id = soli.id_equipamiento
+    JOIN sector sec ON sec.id = maq.id_sector
+    LEFT JOIN usuario usuJuez ON soli.id_juez = usuJuez.id
+    JOIN usuario usuSolicitante ON soli.id_usuario = usuSolicitante.id
+    WHERE soli.id_usuario = $1`;
     const values = [id];
 
     if (estado !== "") {
-      const text =
-        "SELECT * FROM solicitud WHERE id_usuario = $1 AND estado = $2";
+      const text = `SELECT
+        soli.id AS id_solicitud,
+        soli.descripcion AS descripcion,
+        soli.estado AS estado,
+        soli.fecha AS fecha,
+        soli.id_juez AS id_juez,
+        usuJuez.nombre AS nombre_juez,
+        usuJuez.apellido AS apellido_juez,
+        soli.id_usuario AS id_usuario_soli,
+        usuSolicitante.nombre AS nombre_solicitante,
+        usuSolicitante.apellido AS apellido_solicitante,
+        soli.id_equipamiento AS id_equipamiento,
+        maq.nombre AS nombre_equipamiento,
+        sec.id AS id_sector,
+        sec.nombre AS nombre_sector
+      FROM solicitud soli
+      JOIN equipamiento maq ON maq.id = soli.id_equipamiento
+      JOIN sector sec ON sec.id = maq.id_sector
+      LEFT JOIN usuario usuJuez ON soli.id_juez = usuJuez.id
+      JOIN usuario usuSolicitante ON soli.id_usuario = usuSolicitante.id
+      WHERE soli.id_usuario = $1 AND soli.estado = $2`;
       const values = [id, estado];
       const resp = await this.client.query(text, values);
       return resp.rows;
@@ -795,7 +876,28 @@ class DataBase {
   }
 
   async getSolicitudPorId(id) {
-    const text = "SELECT * FROM solicitud WHERE id = $1";
+    const text = `
+    SELECT
+      soli.id AS id_solicitud,
+      soli.descripcion AS descripcion,
+      soli.estado AS estado,
+      soli.fecha AS fecha,
+      soli.id_juez AS id_juez,
+      usuJuez.nombre AS nombre_juez,
+      usuJuez.apellido AS apellido_juez,
+      soli.id_usuario AS id_usuario_soli,
+      usuSolicitante.nombre AS nombre_solicitante,
+      usuSolicitante.apellido AS apellido_solicitante,
+      soli.id_equipamiento AS id_equipamiento,
+      maq.nombre AS nombre_equipamiento,
+      sec.id AS id_sector,
+      sec.nombre AS nombre_sector
+    FROM solicitud soli
+    JOIN equipamiento maq ON maq.id = soli.id_equipamiento
+    JOIN sector sec ON sec.id = maq.id_sector
+    LEFT JOIN usuario usuJuez ON soli.id_juez = usuJuez.id
+    JOIN usuario usuSolicitante ON soli.id_usuario = usuSolicitante.id
+    WHERE soli.id = $1;`;
     const values = [id];
 
     const resp = await this.client.query(text, values);
@@ -803,7 +905,29 @@ class DataBase {
   }
 
   async getSolicitudesPorEstado(estado) {
-    const text = "SELECT * FROM solicitud WHERE estado = $1";
+    const text = `
+    SELECT
+      soli.id AS id_solicitud,
+      soli.descripcion AS descripcion,
+      soli.estado AS estado,
+      soli.fecha AS fecha,
+      soli.id_juez AS id_juez,
+      usuJuez.nombre AS nombre_juez,
+      usuJuez.apellido AS apellido_juez,
+      soli.id_usuario AS id_usuario_soli,
+      usuSolicitante.nombre AS nombre_solicitante,
+      usuSolicitante.apellido AS apellido_solicitante,
+      soli.id_equipamiento AS id_equipamiento,
+      maq.nombre AS nombre_equipamiento,
+      sec.id AS id_sector,
+      sec.nombre AS nombre_sector
+    FROM solicitud soli
+    JOIN equipamiento maq ON maq.id = soli.id_equipamiento
+    JOIN sector sec ON sec.id = maq.id_sector
+    LEFT JOIN usuario usuJuez ON soli.id_juez = usuJuez.id
+    JOIN usuario usuSolicitante ON soli.id_usuario = usuSolicitante.id
+    WHERE soli.estado = $1;
+    `;
     const values = [estado];
 
     const resp = await this.client.query(text, values);

@@ -1,5 +1,15 @@
 # Historial de Cambios
 
+## [2.1.1] - 2024-07-27
+
+### Change
+
+- Se modifico los formatos de las respuestas JSON de las solicitudes
+
+## Fixed
+
+- Bug que impedía que los Encargados de un Área puedan visualizar información de la tarea de una solicitud específica.
+
 ## [2.0.1] - 2024-07-27
 
 ### Added

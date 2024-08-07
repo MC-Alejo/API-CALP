@@ -175,7 +175,7 @@ const eliminarAlarmaMantenimiento = async (req, res) => {
       });
     }
 
-    const resp = await db.eliminarAlarmaMantenimiento(id, solicitud.id);
+    const resp = await db.eliminarAlarmaMantenimiento(id, solicitud.id_solicitud);
 
     res.json({
       msg: "Alarma de mantenimiento eliminada con exito",

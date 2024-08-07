@@ -56,7 +56,7 @@ router.get('/:id', [
 //obtener la tarea de una solicitud
 router.get('/:id/tarea', [
     validarJWT,
-    esJefeDeMantenimiento,
+    esUnRolValido,
     check('id', 'El ID es obligatorio').not().isEmpty(),
     check('id', 'El ID debe ser un numero').isNumeric(),
     check('id', 'El ID debe ser un numero').isInt(),
