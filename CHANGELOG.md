@@ -1,11 +1,5 @@
 # Historial de Cambios
 
-## [2.1.4] - 2024-08-07
-
-### Removed
-
-- Se quitó la validación de nombres iguales del endpoint de inventarios
-
 ## [2.1.3] - 2024-08-07
 
 ### Change
