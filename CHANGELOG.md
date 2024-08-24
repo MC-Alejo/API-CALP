@@ -1,5 +1,11 @@
 # Historial de Cambios
 
+## [2.1.3] - 2024-08-07
+
+### Change
+
+- Endpoint para obtener depositos ahora devuelve la informacion de los depositos más la info de su jefe de mantenimiento
+
 ## [2.1.2] - 2024-08-07
 
 ### Change
