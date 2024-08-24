@@ -178,16 +178,6 @@ const existeDepositoPorId = async (id) => {
 };
 
 // ---------------------  VALIDACIONES INVENTARIO  --------------------------------
-const existeInventarioPorNombre = async (nombre) => {
-  const db = new DataBase();
-
-  const resp = await db.getInventarioPorNombre(nombre);
-  if (resp) {
-    throw new Error(`Ya existe un inventario con ese nombre`);
-  }
-
-  return true;
-};
 
 const existeInventarioPorId = async (id) => {
   const db = new DataBase();
@@ -292,7 +282,6 @@ module.exports = {
   existeEmpleadoPorId,
   existeEquipamientoPorId,
   existeInventarioPorId,
-  existeInventarioPorNombre,
   existeNombreArea,
   existeNombreDeposito,
   existeSectorPorId,

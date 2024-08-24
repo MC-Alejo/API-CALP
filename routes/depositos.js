@@ -4,7 +4,7 @@ const { check } = require('express-validator');
 
 const { validarCampos, validarJWT, esGerente, esJefeDeMantenimiento } = require('../middlewares');
 
-const { existeNombreDeposito, existeDepositoPorId, existeInventarioPorNombre } = require('../helpers');
+const { existeNombreDeposito, existeDepositoPorId } = require('../helpers');
 
 const {
     crearDeposito,
@@ -102,7 +102,6 @@ router.post('/:id', [
     check('nombre', 'El nombre no es un nombre valido').isString(),
     check('nombre', 'El nombre debe tener minimo 2 caracteres').isLength({ min: 2 }),
     check('nombre', 'El nombre no puede tener mas de 46 caracteres').isLength({ max: 65 }),
-    check('nombre').custom(existeInventarioPorNombre),
 
     check('stock', 'El stock es obligatorio').not().isEmpty(),
     check('stock', 'El stock debe ser un numero').isNumeric(),
