@@ -14,6 +14,8 @@ class DataBase {
       port: process.env.PGPORT,
       user: process.env.PGUSER,
       password: process.env.PGPASSWORD,
+      idleTimeoutMillis: 1, //TODO: DOCUMENTAR ESTO
+      max: 50,
     });
 
     this.client.on("error", (err) => {
@@ -306,7 +308,18 @@ class DataBase {
   // ----------------- Querys de los depositos:  -----------------
 
   async obtenerDepositos() {
-    const text = "SELECT id, nombre FROM deposito";
+    const text = `
+    SELECT
+    depo.id AS id_deposito,
+    depo.nombre nombre_deposito,
+    usuario.nombre nombre_jefe,
+    usuario.apellido apellido_jefe
+    FROM deposito depo
+    LEFT JOIN jefe_mantenimiento jefe
+    ON depo.id = jefe.id_deposito
+    LEFT JOIN usuario usuario
+    ON jefe.id_usuario = usuario.id
+    `;
     const resp = await this.client.query(text);
     return resp.rows;
   }
