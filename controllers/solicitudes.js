@@ -164,6 +164,26 @@ const rechazarSolicitud = async (req, res) => {
     }
 }
 
+const cancelarSolicitud = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const db = new DataBase();
+        
+        await db.modificarEstadoSolicitud(id, 'cancelada');
+        
+        
+        res.status(200).json({
+            msg: 'La solicitud se canceló correctamente'
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            msg: 'Error al actualizar la solicitud'
+        });
+    }
+}
+
 const crearTarea = async (req, res) => {
     const { descripcion = '', prioridad, id_responsable = null } = req.body;
     const { id } = req.params;
@@ -194,6 +214,7 @@ const crearTarea = async (req, res) => {
 
 
 module.exports = {
+    cancelarSolicitud,
     crearSolicitud,
     crearTarea,
     obtenerSolicitudes,

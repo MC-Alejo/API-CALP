@@ -117,7 +117,7 @@ CREATE TABLE solicitud
     id SERIAL PRIMARY KEY NOT NULL,
     estado character varying(15) NOT NULL,
     -- puede ser pendiente, aceptada o rechazada
-    fecha date NOT NULL ,
+    fecha TIMESTAMPTZ NOT NULL ,
     descripcion character varying(250) NOT NULL,
     id_equipamiento integer NOT NULL, --//EL EQUIPAMIENTO ES OBLIGATORIO
     id_usuario uuid NOT NULL,
@@ -133,12 +133,12 @@ CREATE TABLE tarea
     id SERIAL PRIMARY KEY NOT NULL,
     estado character varying(15) NOT NULL,
     -- el estado varia en: en curso y finalizada
-    fecha date NOT NULL,
-    fechaCumplimiento date,
+    fecha TIMESTAMPTZ NOT NULL,
+    fechaCumplimiento TIMESTAMPTZ,
     descripcion character varying(250),
     prioridad integer,
     id_solicitud integer NOT NULL,
-    id_responsable integer,
+    id_responsable integer NOT NULL,
     --
     FOREIGN KEY (id_solicitud) REFERENCES solicitud(id),
     FOREIGN KEY (id_responsable) REFERENCES responsable(id)

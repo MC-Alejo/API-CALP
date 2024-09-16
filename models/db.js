@@ -958,7 +958,7 @@ class DataBase {
 
   async crearSolicitud(descripcion, id_equipamiento, id_usuario) {
     const text =
-      "INSERT INTO solicitud (estado, fecha, descripcion, id_equipamiento, id_usuario) VALUES ($1, CURRENT_DATE, $2, $3, $4) RETURNING *";
+      "INSERT INTO solicitud (estado, fecha, descripcion, id_equipamiento, id_usuario) VALUES ($1, LOCALTIMESTAMP, $2, $3, $4) RETURNING *";
     const values = ["pendiente", descripcion, id_equipamiento, id_usuario];
 
     const resp = await this.client.query(text, values);
@@ -1186,7 +1186,7 @@ class DataBase {
       values = [estado, descripcion, prioridad, id_solicitud, id_responsable];
 
       text =
-        "INSERT INTO tarea (estado, fecha, descripcion, prioridad, id_solicitud, id_responsable) VALUES ($1, CURRENT_DATE, $2, $3, $4, $5) RETURNING *";
+        "INSERT INTO tarea (estado, fecha, descripcion, prioridad, id_solicitud, id_responsable) VALUES ($1, LOCALTIMESTAMP, $2, $3, $4, $5) RETURNING *";
     } else {
       values = [
         estado,
@@ -1244,7 +1244,7 @@ class DataBase {
 
     if (estado === "finalizada") {
       text =
-        "UPDATE tarea SET estado = $1, fechaCumplimiento = CURRENT_DATE WHERE id = $2 RETURNING *";
+        "UPDATE tarea SET estado = $1, fechaCumplimiento = LOCALTIMESTAMP WHERE id = $2 RETURNING *";
     } else text = "UPDATE tarea SET estado = $1 WHERE id = $2 RETURNING *";
 
     const resp = await this.client.query(text, values);
@@ -1283,7 +1283,7 @@ class DataBase {
     //extraigo el timestamp del momento en que se realiza el backup
     const query1 = await this.client
       .query(
-        "SELECT to_char(CURRENT_TIMESTAMP, 'YYYY-MM-DD_HH24-MI-SS.US') AS fecha"
+        "SELECT to_char(LOCALTIMESTAMP, 'YYYY-MM-DD_HH24-MI-SS.US') AS fecha"
       )
       .catch((e) => {
         throw e;

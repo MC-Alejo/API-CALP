@@ -93,6 +93,7 @@ const validarFecha = (fecha) => {
   const inputDate = new Date(fecha); //transformo la fecha de string a formato Date
   const fecActuSinTratar = new Date(); //extraigo la fecha actual
 
+  console.log(inputDate);
   // Configuro la hora de la fecha actual a medianoche para comparación solo de fechas
   fecActuSinTratar.setHours(0, 0, 0, 0);
 

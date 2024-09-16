@@ -13,6 +13,7 @@ const {
     obtenerSolicitudesPorIdUsuario,
     obtenerTareaPorIdSolicitud,
     rechazarSolicitud,
+    cancelarSolicitud,
 } = require('../controllers/solicitudes');
 
 
@@ -93,9 +94,25 @@ router.delete('/:id', [
     check('id', 'El ID debe ser un numero').isNumeric(),
     check('id', 'El ID debe ser un numero').isInt(),
     check('id').custom(existeSolicitudPorId),
+    check('id').custom(SolicitudEstaPendiente),
 
     validarCampos,
 ], rechazarSolicitud);
+
+//TODO: DOCUMENTAR
+//cancelar solicitud
+router.patch('/:id/cancel', [
+    //VALIDACIONES DEL ENDPOINT
+    validarJWT,
+    esJefeDeMantenimiento,
+    check('id', 'El ID debe ser un numero').not().isEmpty(),
+    check('id', 'El ID debe ser un numero').isNumeric(),
+    check('id', 'El ID debe ser un numero').isInt(),
+    check('id').custom(existeSolicitudPorId),
+    check('id').custom(SolicitudEstaPendiente),
+
+    validarCampos,
+], cancelarSolicitud);
 
 //crear una tarea en base a las solicitudes de los EA (solicitud aceptada)
 router.post('/:id', [
@@ -116,10 +133,10 @@ router.post('/:id', [
     check('prioridad', 'El ID debe ser un numero').optional().isInt(),
     check('prioridad', 'La prioridad debe ser un numero entre 1 y 3').optional().isInt({ min: 1, max: 3 }), // 1 (alta), 2 (media), 3 (baja)
 
-    //id_responsable OPCIONAL
-    check('id_responsable', 'El ID debe ser un numero').optional().isNumeric(),
-    check('id_responsable', 'El ID debe ser un numero').optional().isInt(),
-    check('id_responsable').optional().custom(existeEmpleadoPorId),
+    //id_responsable ES OBLIGATORIO //TODO: DOCUMENTAR
+    check('id_responsable', 'El ID debe ser un numero').isNumeric(),
+    check('id_responsable', 'El ID debe ser un numero').isInt(),
+    check('id_responsable').custom(existeEmpleadoPorId),
     validarCampos,
 ], crearTarea);
 

@@ -132,7 +132,7 @@ router.post('/', [
     //estado
     check('estado', 'El estado no es un estado valido').optional().isIn(['en curso', 'finalizada']),
 
-    //id_responsable
+    //id_responsable //TODO: DOCUMENTAR
     check('id_responsable', 'El ID debe ser un numero').isNumeric(),
     check('id_responsable', 'El ID debe ser un numero').isInt(),
     check('id_responsable').custom(existeEmpleadoPorId),
