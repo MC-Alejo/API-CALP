@@ -340,10 +340,21 @@ const agregarInventarioATarea = async (req, res = response) => {
         .json({ errors: [{ msg: "Ya existe ese inventario en la tarea" }] });
     }
 
+    const inventario = await db.getInventarioPorId(id_inventario);
+
+    const restarCantidad = Number(inventario.stock) - Number(cantidad);
+    
+    if(restarCantidad < 0){
+      return res
+        .status(400)
+        .json({ errors: [{ msg: "La cantidad es superior a la cantidad disponible en stock" }] });
+    }
+
     const inventarioTarea = await db.agregarInventarioATarea(
       id,
       id_inventario,
-      cantidad
+      cantidad,
+      restarCantidad
     );
 
     return res.status(201).json({
@@ -358,11 +369,46 @@ const agregarInventarioATarea = async (req, res = response) => {
   }
 };
 
+const eliminarInventarioDeTarea = async (req, res = response) => {
+  
+  const { id } = req.params;
+  const { id_inventario } = req.body;
+  try {
+
+    const db = new DataBase();
+
+    const resp = await db.getInventarioEnTarea(id, id_inventario);
+
+    if (!resp) {
+      return res
+        .status(400)
+        .json({ errors: [{ msg: "No existe ese inventario en la tarea" }] });
+    }
+
+
+    const inventario = await db.getInventarioPorId(id_inventario);
+
+    const newStock = Number(inventario.stock) + Number(resp.cantidad_usada);
+
+    const inventarioTarea = await db.EliminarInventarioATarea(id,id_inventario, newStock);
+
+    return res.status(200).json({
+      msg: "Inventario eliminado correctamente"
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      msg: "Error al eliminar el inventario de una tarea",
+    });
+  }
+}
+
 module.exports = {
   actualizarTarea,
   agregarInventarioATarea,
   cargarAlarma,
   cargarTareaDelJefe,
+  eliminarInventarioDeTarea,
   finalizarTarea,
   obtenerInventarioDeTarea,
   obtenerTareaPorId,

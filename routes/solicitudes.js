@@ -1,7 +1,7 @@
 const { Router } = require('express');
 const { check } = require('express-validator');
 
-const { validarCampos, validarJWT, esEncargadoDeArea, esJefeDeMantenimiento, esUnRolValido } = require('../middlewares');
+const { validarCampos, validarJWT, esEncargadoDeArea, esJefeDeMantenimiento, esUnRolValido, esSolicitanteEsGo } = require('../middlewares');
 const { existeEquipamientoPorId, existeSolicitudPorId, existeEmpleadoPorId, SolicitudEstaPendiente, validarIdUsuario } = require('../helpers');
 
 const {
@@ -99,18 +99,17 @@ router.delete('/:id', [
     validarCampos,
 ], rechazarSolicitud);
 
-//TODO: DOCUMENTAR
 //cancelar solicitud
 router.patch('/:id/cancel', [
     //VALIDACIONES DEL ENDPOINT
     validarJWT,
-    esJefeDeMantenimiento,
+    esUnRolValido,
+    esSolicitanteEsGo,
     check('id', 'El ID debe ser un numero').not().isEmpty(),
     check('id', 'El ID debe ser un numero').isNumeric(),
     check('id', 'El ID debe ser un numero').isInt(),
     check('id').custom(existeSolicitudPorId),
     check('id').custom(SolicitudEstaPendiente),
-
     validarCampos,
 ], cancelarSolicitud);
 
@@ -133,9 +132,9 @@ router.post('/:id', [
     check('prioridad', 'El ID debe ser un numero').optional().isInt(),
     check('prioridad', 'La prioridad debe ser un numero entre 1 y 3').optional().isInt({ min: 1, max: 3 }), // 1 (alta), 2 (media), 3 (baja)
 
-    //id_responsable ES OBLIGATORIO //TODO: DOCUMENTAR
-    check('id_responsable', 'El ID debe ser un numero').isNumeric(),
-    check('id_responsable', 'El ID debe ser un numero').isInt(),
+    //id_responsable ES OBLIGATORIO
+    check('id_responsable', 'El ID del responsable debe ser un numero').isNumeric(),
+    check('id_responsable', 'El ID del responsable debe ser un numero entero sin comas ni puntos').isInt(),
     check('id_responsable').custom(existeEmpleadoPorId),
     validarCampos,
 ], crearTarea);

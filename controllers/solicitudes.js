@@ -6,7 +6,7 @@ const obtenerSolicitudes = async (req, res) => {
         const db = new DataBase();
         
         if (estado) {
-            if (estado === 'aceptada' || estado === 'rechazada' || estado === 'pendiente') {
+            if (estado === 'aceptada' || estado === 'rechazada' || estado === 'pendiente' || estado === 'cancelada') {
                 const solicitudes = await db.getSolicitudesPorEstado(estado);
                 
                 return res.status(200).json({
@@ -53,7 +53,7 @@ const obtenerSolicitudesPorIdUsuario = async (req, res) => {
         const db = new DataBase();
         
         if (estado) {
-            if (estado === 'aceptada' || estado === 'rechazada' || estado === 'pendiente') {
+            if (estado === 'aceptada' || estado === 'rechazada' || estado === 'pendiente' || estado === 'cancelada') {
                 const solicitudes = await db.getSolicitudesPorIdUsuario(id, estado);
                 
                 return res.status(200).json({

@@ -1,16 +1,22 @@
 # Historial de Cambios
 
-## [2.2.2] - 2024-09-14
+## [2.2.0] - 2024-09-XX
 
 ### Added
 
 - Se agregó el endpoint para cancelar solicitudes.
+- Se agrego el endpoint para eliminar un inventario de una tarea.
 
 ### Change
 
-- Se cambio el formato de fecha de DATE a TIMESTAMP para incluir horas y minutos.
+- Se cambió el formato de fecha de DATE a TIMESTAMP para incluir horas y minutos.
 - Se modificaron los INSERTS tanto para las tareas como para las solicitudes, ahora en vez de que tome el CURRENT_DATE, toma el CURRENT_TIMESTAMP con el objetivo de que se incluyan horas y minutos.
 - El responsable o empleado del taller de mantenimiento, a la hora de crear una tarea, vuelve a ser un campo obligatorio.
+
+### Fixed
+
+- Se solucionó el stock de un inventario al agregarse en una tarea.
+- Se corrigió el estado de una solicitud, ahora al estar cancelada o finalizada no podra ser tratada.
 
 ## [2.1.4] - 2024-08-07
 
@@ -34,7 +40,7 @@
 
 ### Change
 
-- Se modifico los formatos de las respuestas JSON de las solicitudes
+- Se modificó los formatos de las respuestas JSON de las solicitudes
 
 ### Fixed
 

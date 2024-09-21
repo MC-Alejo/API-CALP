@@ -17,7 +17,8 @@ const {
     obtenerTareasOrdenadas,
     obtenerTareasPorJuez,
     obtenerTareasPorJuezOrdenadas,
-    obtenerTarPorMaquiYJuezOrd
+    obtenerTarPorMaquiYJuezOrd,
+    eliminarInventarioDeTarea
 } = require('../controllers');
 
 
@@ -132,7 +133,7 @@ router.post('/', [
     //estado
     check('estado', 'El estado no es un estado valido').optional().isIn(['en curso', 'finalizada']),
 
-    //id_responsable //TODO: DOCUMENTAR
+    //id_responsable
     check('id_responsable', 'El ID debe ser un numero').isNumeric(),
     check('id_responsable', 'El ID debe ser un numero').isInt(),
     check('id_responsable').custom(existeEmpleadoPorId),
@@ -185,5 +186,22 @@ router.post('/:id', [
     validarCampos,
     esJuezEsGo,
 ], agregarInventarioATarea)
+
+router.delete('/:id', [
+    validarJWT,
+    esJefeDeMantenimiento,
+    check('id', 'El ID debe ser un numero').not().isEmpty(),
+    check('id', 'El ID debe ser un numero').isNumeric(),
+    check('id', 'El ID debe ser un numero').isInt(),
+    check('id').custom(tareaPorIdFinalizo),
+
+    check('id_inventario', 'El ID de inventario debe ser un numero').not().isEmpty(),
+    check('id_inventario', 'El ID de inventario debe ser un numero').isNumeric(),
+    check('id_inventario', 'El ID de inventario debe ser un numero').isInt(),
+    check('id_inventario').custom(existeInventarioPorId),
+
+    validarCampos,
+    esJuezEsGo,
+], eliminarInventarioDeTarea)
 
 module.exports = router;

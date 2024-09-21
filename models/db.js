@@ -14,7 +14,7 @@ class DataBase {
       port: process.env.PGPORT,
       user: process.env.PGUSER,
       password: process.env.PGPASSWORD,
-      idleTimeoutMillis: 1, //TODO: DOCUMENTAR ESTO
+      idleTimeoutMillis: 1,
       max: 50,
     });
 
@@ -658,21 +658,21 @@ class DataBase {
   // ----------------- Querys de las alarma: -----------------
 
   async getAlarmas() {
-    const text = "select * from tarea WHERE fecha > date(now())";
+    const text = "select * from tarea WHERE date(fecha) > date(now())";
     const resp = await this.client.query(text);
     return resp.rows;
   }
 
   async getAlarmasOrdenadas() {
     const text =
-      "select * from tarea WHERE fecha > date(now()) ORDER BY fecha ASC";
+      "select * from tarea WHERE date(fecha) > date(now()) ORDER BY fecha ASC";
     const resp = await this.client.query(text);
     return resp.rows;
   }
 
   async getAlarmasPorIdMaquina(id) {
     const text =
-      "SELECT t.id AS id_tarea, t.estado AS estado_tarea, t.fecha AS fecha_alarma, t.fechacumplimiento, t.descripcion AS descripcion_tarea, t.prioridad AS prioridad_tarea, t.id_solicitud, id_responsable  FROM tarea AS t JOIN solicitud AS s ON t.id_solicitud = s.id WHERE t.fecha > date(now()) AND s.id_equipamiento = $1 ORDER BY t.fecha ASC";
+      "SELECT t.id AS id_tarea, t.estado AS estado_tarea, t.fecha AS fecha_alarma, t.fechacumplimiento, t.descripcion AS descripcion_tarea, t.prioridad AS prioridad_tarea, t.id_solicitud, id_responsable  FROM tarea AS t JOIN solicitud AS s ON t.id_solicitud = s.id WHERE date(t.fecha) > date(now()) AND s.id_equipamiento = $1 ORDER BY t.fecha ASC";
     const values = [id];
     const resp = await this.client.query(text, values);
     return resp.rows;
@@ -696,7 +696,7 @@ class DataBase {
     FROM solicitud s
     JOIN tarea tar
     ON tar.id_solicitud = s.id
-    WHERE tar.fecha > date(now()) AND s.id_juez = $1
+    WHERE date(tar.fecha) > date(now()) AND s.id_juez = $1
     ORDER BY tar.fecha ASC`;
     const values = [id_juez];
 
@@ -722,7 +722,7 @@ class DataBase {
     FROM solicitud s
     JOIN tarea tar
     ON tar.id_solicitud = s.id
-    WHERE tar.fecha > date(now()) AND id_juez = $1 AND id_equipamiento = $2
+    WHERE date(tar.fecha) > date(now()) AND id_juez = $1 AND id_equipamiento = $2
     ORDER BY tar.fecha ASC`;
     const values = [id_juez, id];
 
@@ -731,7 +731,7 @@ class DataBase {
   }
 
   async getAlarma(id) {
-    const text = "SELECT * FROM tarea WHERE id = $1 AND fecha > DATE(now())";
+    const text = "SELECT * FROM tarea WHERE id = $1 AND date(fecha) > DATE(now())";
     const values = [id];
 
     const resp = await this.client.query(text, values);
@@ -765,7 +765,7 @@ class DataBase {
 
   async eliminarAlarmaMantenimiento(id, id_solicitud) {
     const eliminarAlarm =
-      "DELETE FROM tarea WHERE id = $1 AND fecha > DATE(now())";
+      "DELETE FROM tarea WHERE id = $1 AND date(fecha) > DATE(now())";
     const eliminarSoliAlarm = "DELETE FROM solicitud WHERE id = $1";
     const values = [id];
     const values_soli = [id_solicitud];
@@ -992,7 +992,7 @@ class DataBase {
   async getTareasOrdenadas() {
     const text = `
     SELECT * FROM tarea
-    WHERE fecha <= date(now())
+    WHERE date(fecha) <= date(now())
     ORDER BY CASE
         WHEN estado = 'en curso' AND prioridad = 1 THEN 0
         ELSE CASE WHEN estado = 'en curso' AND prioridad = 2 THEN 1
@@ -1010,7 +1010,7 @@ class DataBase {
 
   async getTareasPorIdMaquina(id) {
     const text =
-      "SELECT t.id AS id_tarea, t.estado AS estado_tarea, t.fecha AS fecha_tarea, t.fechacumplimiento, t.descripcion AS descripcion_tarea, t.prioridad AS prioridad_tarea, t.id_solicitud, id_responsable FROM tarea AS t JOIN solicitud AS s ON t.id_solicitud = s.id WHERE t.fecha <= date(now()) AND s.id_equipamiento = $1 ORDER BY t.fecha Desc;";
+      "SELECT t.id AS id_tarea, t.estado AS estado_tarea, t.fecha AS fecha_tarea, t.fechacumplimiento, t.descripcion AS descripcion_tarea, t.prioridad AS prioridad_tarea, t.id_solicitud, id_responsable FROM tarea AS t JOIN solicitud AS s ON t.id_solicitud = s.id WHERE date(t.fecha) <= date(now()) AND s.id_equipamiento = $1 ORDER BY t.fecha Desc;";
     const values = [id];
     const resp = await this.client.query(text, values);
     return resp.rows;
@@ -1018,7 +1018,7 @@ class DataBase {
 
   async getTareasPorEstado(estado) {
     const text =
-      "SELECT * FROM tarea WHERE estado = $1 AND fecha <= date(now())";
+      "SELECT * FROM tarea WHERE estado = $1 AND date(fecha) <= date(now())";
     const values = [estado];
 
     const resp = await this.client.query(text, values);
@@ -1027,7 +1027,7 @@ class DataBase {
 
   async getTareasPorPrioridad(prioridad) {
     const text =
-      "SELECT * FROM tarea WHERE prioridad = $1 AND fecha <= date(now())";
+      "SELECT * FROM tarea WHERE prioridad = $1 AND date(fecha) <= date(now())";
     const values = [prioridad];
 
     const resp = await this.client.query(text, values);
@@ -1052,7 +1052,7 @@ class DataBase {
         FROM solicitud s
         JOIN tarea tar
         ON tar.id_solicitud = s.id
-        WHERE id_juez = $1 AND tar.fecha <= date(now())`;
+        WHERE id_juez = $1 AND date(tar.fecha) <= date(now())`;
     const values = [id_juez];
 
     const resp = await this.client.query(text, values);
@@ -1077,7 +1077,7 @@ class DataBase {
     FROM solicitud s
     JOIN tarea tar
     ON tar.id_solicitud = s.id
-    WHERE tar.fecha <= date(now()) AND id_juez = $1
+    WHERE date(tar.fecha) <= date(now()) AND id_juez = $1
     ORDER BY CASE
     WHEN tar.estado = 'en curso' AND tar.prioridad = 1 THEN 0
     ELSE CASE WHEN tar.estado = 'en curso' AND tar.prioridad = 2 THEN 1
@@ -1112,7 +1112,7 @@ class DataBase {
     FROM solicitud s
     JOIN tarea tar
     ON tar.id_solicitud = s.id
-    WHERE tar.fecha <= date(now()) AND id_juez = $1 AND id_equipamiento = $2
+    WHERE date(tar.fecha) <= date(now()) AND id_juez = $1 AND id_equipamiento = $2
     ORDER BY CASE
     WHEN tar.estado = 'en curso' AND tar.prioridad = 1 THEN 0
     ELSE CASE WHEN tar.estado = 'en curso' AND tar.prioridad = 2 THEN 1
@@ -1142,7 +1142,7 @@ class DataBase {
     JOIN usuario userJ
     ON s.id_juez = userJ.id
     WHERE
-    tar.fecha <= date(now()) AND tar.id = $1
+    date(tar.fecha) <= date(now()) AND tar.id = $1
     `;
     const values = [id];
 
@@ -1163,7 +1163,7 @@ class DataBase {
     JOIN usuario userJ
     ON s.id_juez = userJ.id
     WHERE
-    tar.fecha > date(now()) AND tar.id = $1
+    date(tar.fecha) > date(now()) AND tar.id = $1
     `;
     const values = [id];
 
@@ -1205,7 +1205,7 @@ class DataBase {
   }
 
   async getTareaPorId(id) {
-    const text = "SELECT * FROM tarea WHERE id = $1 AND fecha <= date(now())";
+    const text = "SELECT * FROM tarea WHERE id = $1 AND date(fecha) <= date(now())";
     const values = [id];
 
     const resp = await this.client.query(text, values);
@@ -1251,12 +1251,31 @@ class DataBase {
     return resp.rows[0];
   }
 
-  async agregarInventarioATarea(id_tarea, id_inventario, cantidad) {
+  async agregarInventarioATarea(id_tarea, id_inventario, cantidad, newStock) {
     const text =
       "INSERT INTO inv_tar (id_tarea, id_inventario, cantidad_usada) VALUES ($1, $2, $3) RETURNING *";
     const values = [id_tarea, id_inventario, cantidad];
-
+    
+    const textUpdate = "UPDATE inventario SET stock = $1 WHERE id = $2 RETURNING *";
+    const valuesUpdate = [newStock, id_inventario]
+  
     const resp = await this.client.query(text, values);
+    await this.client.query(textUpdate, valuesUpdate);
+    
+    return resp.rows[0];
+  }
+
+  async EliminarInventarioATarea(id_tarea, id_inventario, newStock) {
+    const text =
+      "DELETE FROM inv_tar WHERE id_tarea = $1 AND id_inventario = $2";
+    const values = [id_tarea, id_inventario];
+    
+    const textUpdate = "UPDATE inventario SET stock = $1 WHERE id = $2 RETURNING *";
+    const valuesUpdate = [newStock, id_inventario]
+  
+    const resp = await this.client.query(text, values);
+    await this.client.query(textUpdate, valuesUpdate);
+    
     return resp.rows[0];
   }
 
@@ -1325,12 +1344,12 @@ class DataBase {
         WHERE
         ${
           intervalo === "T"
-            ? "tar.fecha = date(now())"
+            ? "date(tar.fech)a = date(now())"
             : intervalo === "W"
-            ? "tar.fecha BETWEEN DATE(NOW() - INTERVAL '1 week') AND NOW()"
+            ? "date(tar.fecha) BETWEEN DATE(NOW() - INTERVAL '1 week') AND NOW()"
             : intervalo === "M"
-            ? "tar.fecha BETWEEN DATE(NOW() - INTERVAL '1 month') AND NOW()"
-            : "tar.fecha <= date(now())"
+            ? "date(tar.fecha) BETWEEN DATE(NOW() - INTERVAL '1 month') AND NOW()"
+            : "date(tar.fecha) <= date(now())"
         }
         ${estado ? "AND tar.estado = " + estado : ""}
         ${equipamiento ? "AND s.id_equipamiento = " + equipamiento : ""}
@@ -1356,7 +1375,7 @@ class DataBase {
         ON sec.id = maq.id_sector
         FULL JOIN area
         ON area.id = sec.id_area
-        WHERE tar.fecha <= date(now()) AND area.estado = true
+        WHERE date(tar.fecha) <= date(now()) AND area.estado = true
         GROUP BY area.id;
     `;
 

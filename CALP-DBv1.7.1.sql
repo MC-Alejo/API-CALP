@@ -116,7 +116,7 @@ CREATE TABLE solicitud
 (
     id SERIAL PRIMARY KEY NOT NULL,
     estado character varying(15) NOT NULL,
-    -- puede ser pendiente, aceptada o rechazada
+    -- puede ser pendiente, aceptada, rechazada o incluso cancelada
     fecha TIMESTAMPTZ NOT NULL ,
     descripcion character varying(250) NOT NULL,
     id_equipamiento integer NOT NULL, --//EL EQUIPAMIENTO ES OBLIGATORIO
