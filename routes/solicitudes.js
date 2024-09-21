@@ -104,13 +104,13 @@ router.patch('/:id/cancel', [
     //VALIDACIONES DEL ENDPOINT
     validarJWT,
     esUnRolValido,
-    esSolicitanteEsGo,
     check('id', 'El ID debe ser un numero').not().isEmpty(),
     check('id', 'El ID debe ser un numero').isNumeric(),
     check('id', 'El ID debe ser un numero').isInt(),
     check('id').custom(existeSolicitudPorId),
     check('id').custom(SolicitudEstaPendiente),
     validarCampos,
+    esSolicitanteEsGo,
 ], cancelarSolicitud);
 
 //crear una tarea en base a las solicitudes de los EA (solicitud aceptada)
