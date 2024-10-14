@@ -1,6 +1,6 @@
 # Historial de Cambios
 
-## [2.2.0] - 2024-09-XX
+## [2.2.0] - 2024-09-21
 
 ### Added
 
