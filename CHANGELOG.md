@@ -1,5 +1,11 @@
 # Historial de Cambios
 
+## [2.2.1] - 2024-09-21
+
+### Fixed
+
+- Error de eliminar equipamiento/maquinaria, getAlarmaById no existía.
+
 ## [2.2.0] - 2024-09-21
 
 ### Added

@@ -104,7 +104,7 @@ CREATE TABLE jefe_mantenimiento
 CREATE TABLE inventario
 (
     id SERIAL PRIMARY KEY NOT NULL,
-    nombre character varying(65) UNIQUE NOT NULL,
+    nombre character varying(65) NOT NULL,
     stock integer NOT NULL,
     id_deposito integer NOT NULL,
     estado BOOLEAN NOT NULL DEFAULT TRUE,

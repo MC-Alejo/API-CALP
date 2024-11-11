@@ -165,7 +165,7 @@ const bajaEquipamiento = async (req, res) => {
         //Ademas de dar de baja el equipamiento/maquinaria
         await db.eliminarEquipamiento(id);
         // Hay que eliminar la alarma de mantenimiento si es que existe
-        const alarma = await db.getAlarmaDeEquipamiento(id);
+        const alarma = await db.getAlarmasPorIdMaquina(id);
 
         if (alarma) {
             await db.eliminarAlarmaMantenimiento(alarma.id);
