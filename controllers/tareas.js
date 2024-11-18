@@ -217,13 +217,13 @@ const cargarTareaDelJefe = async (req, res = response) => {
 
 const cargarAlarma = async (req, res = response) => {
   const { id } = req.params;
-  const { fecha, descripcion, prioridad, desc_soli = "" } = req.body;
+  const { fecha, descripcion, prioridad, desc_soli = "", id_responsable } = req.body;
   const id_usuario = req.usuario.id;
   try {
     const db = new DataBase();
 
     const solicitud = await db.crearSolicitud(desc_soli, id, id_usuario);
-    const tarea = await db.crearTarea("en curso", fecha, descripcion, prioridad, solicitud.id, null);
+    const tarea = await db.crearTarea("en curso", fecha, descripcion, prioridad, solicitud.id, id_responsable);
     await db.modificarEstadoSolicitud(solicitud.id, "aceptada");
     await db.setJuezSolicitud(solicitud.id, id_usuario);
 

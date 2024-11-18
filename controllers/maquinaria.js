@@ -185,35 +185,9 @@ const bajaEquipamiento = async (req, res) => {
     }
 }
 
-const crearAlarmaDeMantenimiento = async (req, res) => {
-    const { id } = req.params;
-    const { fecha, hora } = req.body
-    console.log(fecha, hora)
-    try {
-        const db = new DataBase();
-        
-
-        const alarma = await db.crearAlarmaMantenimiento(fecha, hora, id);
-
-        
-        res.status(201).json({
-            alarma
-        });
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({
-            errors: [{
-                msg: 'Error al crear una Alarma'
-            }]
-        });
-    }
-}
-
-
 module.exports = {
     actualizarEquipamiento,
     bajaEquipamiento,
-    crearAlarmaDeMantenimiento,
     obtenerAlarmaDeEquipamiento,
     obtenerAlarmaDeJuezMaquinaria,
     obtenerEquipamientoPorId,
