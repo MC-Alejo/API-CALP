@@ -1,5 +1,11 @@
 # Historial de Cambios
 
+## [2.2.3] - 2024-11-18
+
+### Fixed
+
+- Error al crear alarma, bug null al crear una alarma.
+
 ## [2.2.2] - 2024-11-11
 
 ### Fixed
