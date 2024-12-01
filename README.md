@@ -20,7 +20,7 @@ Asegúrate de tener los siguientes elementos antes de comenzar:
 - [**Node.js**](https://nodejs.org/) (versión 18 o superior)
 - [**PostgreSQL**](https://www.postgresql.org/)
 
-> **Nota:** CALP-DBv1.1.0.sql contiene las definiciones de las tablas y datos iniciales. Debes cargar este archivo en tu motor de base de datos. Puedes utilizar y probar cualquier motor de base de datos, pero se recomienda utilizar PostgreSQL, ya que las tablas y configuraciones fueron creadas y probadas en este motor.
+> **Nota:** CALP-DBvx.x.x.sql contiene las definiciones de las tablas y datos iniciales. Debes cargar este archivo en tu motor de base de datos. Puedes utilizar y probar cualquier motor de base de datos, pero se recomienda utilizar PostgreSQL, ya que las tablas y configuraciones fueron creadas y probadas en este motor.
 
 ## Instalación y uso
 
@@ -29,7 +29,7 @@ Asegúrate de tener los siguientes elementos antes de comenzar:
 Clona el repositorio en tu máquina local:
 
 ```bash
-git clone
+git clone https://github.com/MC-Alejo/API-CALP.git
 ```
 
 ### Paso 2: instalar las dependencias
@@ -54,7 +54,7 @@ npm run start
 
 ## Endpoints
 
-Puedes encontrar los endpoints disponibles de la API en el archivo `API CALP V2.0.0.pdf`
+Puedes encontrar los endpoints disponibles de la API en el archivo [`API CALP v2.2.5.pdf`](https://github.com/MC-Alejo/API-CALP/blob/main/API%20CALP%20v2.2.5.pdf)
 
 ## Historial de Cambios
 
