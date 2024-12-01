@@ -5,7 +5,7 @@ const { check } = require('express-validator');
 
 const { validarCampos, validarJWT, esJefeDeMantenimiento, esJuezEsGoAlarma } = require('../middlewares');
 
-const { validarFecha, existeAlarma } = require('../helpers');
+const { validarFecha, existeAlarma, existeEmpleadoPorId } = require('../helpers');
 
 const { actualizarAlarmaMantenimiento, eliminarAlarmaMantenimiento, obtenerAlarmas, obtenerAlarmasOrdenadas, obtenerAlarmaPorId, obtenerAlarmasJuez } = require('../controllers');
 
@@ -70,6 +70,10 @@ router.put('/:id', [
     check('prioridad', 'El ID debe ser un numero').optional().isNumeric(),
     check('prioridad', 'El ID debe ser un numero').optional().isInt(),
     check('prioridad', 'La prioridad debe ser un numero entre 1 y 3').optional().isInt({ min: 1, max: 3 }), // 1 (alta), 2 (media), 3 (baja)
+
+    check('id_responsable', 'El ID debe ser un numero').optional().isNumeric(),
+    check('id_responsable', 'El ID debe ser un numero').optional().isInt(),
+    check('id_responsable').optional().custom(existeEmpleadoPorId),
 
     validarCampos,
     esJuezEsGoAlarma,

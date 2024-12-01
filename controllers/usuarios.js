@@ -342,6 +342,45 @@ const demitirAreaAEncargado = async (req = request, res = response) => {
 
 }
 
+const actualizarDepositoJefe = async (req = request, res = response) => {
+
+    try {
+
+        const { id } = req.params;
+        const { id_deposito } = req.body;
+
+        const rol = await obtenerRol(id)
+        if (rol !== 'JM') {
+            return res.status(400).json({
+                errors: [{
+                    msg: 'El usuario a modificar el deposito debe ser un Jefe de Mantenimiento'
+                }]
+            });
+        }
+
+
+        const db = new DataBase();
+        
+
+        await db.updateDepositoJefe(id, id_deposito);
+
+        
+
+        res.json({
+            msg: 'El deposito del Jefe de Mantenimiento se actualizo con exito'
+        });
+
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({
+            errors: [{
+                msg: 'Error en el servidor. Hable con el administrador'
+            }]
+        });
+    }
+
+}
+
 const eliminarUsuario = async (req = request, res = response) => {
 
     try {
@@ -384,6 +423,7 @@ const eliminarUsuario = async (req = request, res = response) => {
 
 module.exports = {
     actualizarAreaDelEncargado,
+    actualizarDepositoJefe,
     actualizarUsuario,
     crearUsuario,
     demitirAreaAEncargado,

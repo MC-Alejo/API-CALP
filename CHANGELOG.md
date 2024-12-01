@@ -1,5 +1,12 @@
 # Historial de Cambios
 
+## [2.2.5] - 2024-12-01
+
+### Added
+
+- Actualizar el responsable en una alarma.
+- Endpoint para modificar el deposito al jefe de mantenimiento.
+
 ## [2.2.3] - 2024-11-18
 
 ### Fixed

@@ -94,9 +94,9 @@ const obtenerAlarmasJuez = async (req, res) => {
 
 const actualizarAlarmaMantenimiento = async (req, res) => {
   const { id } = req.params;
-  const { prioridad, descripcion = "", fecha } = req.body;
+  const { prioridad, descripcion = "", fecha, id_responsable } = req.body;
 
-  if (!descripcion && !prioridad && !fecha) {
+  if (!descripcion && !prioridad && !fecha && !id_responsable) {
     return res.status(400).json({
       errors: [{ msg: "Debe enviar al menos un campo para actualizar" }],
     });
@@ -129,9 +129,10 @@ const actualizarAlarmaMantenimiento = async (req, res) => {
     const db = new DataBase();
 
     const tareaActualizada = await db.actualizarAlarma(id, {
-      prioridad,
       descripcion,
+      prioridad,
       fecha,
+      id_responsable,
     });
 
     return res.json({
@@ -175,7 +176,10 @@ const eliminarAlarmaMantenimiento = async (req, res) => {
       });
     }
 
-    const resp = await db.eliminarAlarmaMantenimiento(id, solicitud.id_solicitud);
+    const resp = await db.eliminarAlarmaMantenimiento(
+      id,
+      solicitud.id_solicitud
+    );
 
     res.json({
       msg: "Alarma de mantenimiento eliminada con exito",

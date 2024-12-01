@@ -178,6 +178,19 @@ const existeDepositoPorId = async (id) => {
   return true;
 };
 
+const depositoYaAsignado = async (id_deposito) => {
+  const db = new DataBase();
+
+  const resp = await db.validarJefeDefinido(id_deposito);
+  if (resp) {
+    throw new Error(
+      `Ese deposito ya ha sido asignado al usuario con el id: ${resp.id_usuario}`
+    );
+  }
+
+  return true;
+};
+
 // ---------------------  VALIDACIONES INVENTARIO  --------------------------------
 
 const existeInventarioPorId = async (id) => {
@@ -277,6 +290,7 @@ const validarExisteArchivo = async (id) => {
 module.exports = {
   areaYaAsignada,
   correoEmpleadoExiste,
+  depositoYaAsignado,
   existeAlarma,
   existeAreaPorId,
   existeDepositoPorId,

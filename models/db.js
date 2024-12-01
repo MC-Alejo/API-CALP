@@ -216,6 +216,14 @@ class DataBase {
     return resp.rows[0];
   }
 
+  async updateDepositoJefe(id, id_deposito) {
+    const text = "UPDATE jefe_mantenimiento SET id_deposito = $2 WHERE id_usuario = $1";
+    const values = [id, id_deposito];
+
+    const resp = await this.client.query(text, values);
+    return resp.rows[0];
+  }
+
   async getAreaDelUsuario(id) {
     const text = "SELECT id_area FROM encargado_area WHERE id_usuario = $1";
     const values = [id];
@@ -738,10 +746,11 @@ class DataBase {
     return resp.rows[0];
   }
 
-  async actualizarAlarma(id, { descripcion, prioridad, fecha }) {
+  async actualizarAlarma(id, { descripcion, prioridad, fecha, id_responsable }) {
     const setDescripcion = "UPDATE tarea SET descripcion = $1 WHERE id = $2";
     const setPrioridad = "UPDATE tarea SET prioridad = $1 WHERE id = $2";
     const setFecha = "UPDATE tarea SET fecha = $1 WHERE id = $2";
+    const setResponsable = "UPDATE tarea SET id_responsable = $1 WHERE id = $2";
     const text = "SELECT * FROM tarea WHERE id = $1";
 
     if (descripcion) {
@@ -755,6 +764,11 @@ class DataBase {
     if (fecha) {
       const values = [fecha, id];
       await this.client.query(setFecha, values);
+    }
+
+    if (id_responsable) {
+      const values = [id_responsable, id];
+      await this.client.query(setResponsable, values);
     }
 
     const values = [id];

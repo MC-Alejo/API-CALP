@@ -5,7 +5,7 @@ const { check } = require('express-validator');
 const { validarCampos, validarJWT, esGerente } = require('../middlewares');
 const { validarCamposDeRoles } = require('../middlewares');
 
-const { validarEmailExiste, validarIdUsuario, areaYaAsignada, existeAreaPorId } = require('../helpers/dbValidators');
+const { validarEmailExiste, validarIdUsuario, areaYaAsignada, existeAreaPorId, existeDepositoPorId, depositoYaAsignado } = require('../helpers/dbValidators');
 
 const {
     crearUsuario,
@@ -15,6 +15,7 @@ const {
     demitirAreaAEncargado,
     obtenerUsuarios,
     obtenerUsuarioPorID,
+    actualizarDepositoJefe,
 } = require('../controllers');
 
 
@@ -112,6 +113,20 @@ router.put('/areas/:id', [
     check('id_area').custom(areaYaAsignada),
     validarCampos
 ], actualizarAreaDelEncargado);
+
+//ruta para actualizar el deposito de un jefe
+router.put('/depositos/:id', [
+    //VALIDACIONES DEL ENDPOINT
+    validarJWT,
+    esGerente,
+    check('id', 'El formato del ID no es valido').isUUID(),
+    check('id').custom(validarIdUsuario), // el id debe ser un id valido de un usuario en la BD
+    check('id_deposito', 'El ID debe ser un numero').isNumeric(),
+    check('id_deposito', 'El ID debe ser un numero').isInt(),
+    check('id_deposito').custom(existeDepositoPorId),
+    check('id_deposito').custom(depositoYaAsignado),
+    validarCampos
+], actualizarDepositoJefe);
 
 router.delete('/areas/:id', [
     //VALIDACIONES DEL ENDPOINT
