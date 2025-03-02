@@ -143,10 +143,32 @@ const agregarAInventario = async (req, res = response) => {
     }
 }
 
+// Baja de deposito
+const bajaDeposito = async (req, res = response) => {
+    const { id } = req.params;
+    try {
+        const db = new DataBase();
+
+        const deposito = await db.eliminarDeposito(id);
+
+        res.json({
+            msg: 'Deposito dado de baja correctamente',
+            deposito
+        });
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({
+            errors: [{
+                msg: 'Error en el servidor. Hable con el administrador'
+            }]
+        });
+    }
+}
 
 module.exports = {
     actualizarDeposito,
     agregarAInventario,
+    bajaDeposito,
     crearDeposito,
     obtenerDepositoDeJefe,
     obtenerDepositos,

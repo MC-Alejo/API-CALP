@@ -171,7 +171,7 @@ const existeDepositoPorId = async (id) => {
   const db = new DataBase();
 
   const resp = await db.getDepositoPorId(id);
-  if (!resp) {
+  if (!resp || !resp.estado) {
     throw new Error(`No existe un deposito con ese id`);
   }
 

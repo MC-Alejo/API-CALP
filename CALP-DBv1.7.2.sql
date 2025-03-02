@@ -87,7 +87,8 @@ CREATE TABLE equipamiento
 CREATE TABLE deposito
 (
     id SERIAL PRIMARY KEY NOT NULL,
-    nombre character varying(65) NOT NULL
+    nombre character varying(65) NOT NULL,
+    estado BOOLEAN NOT NULL DEFAULT TRUE
 );
 
 CREATE TABLE jefe_mantenimiento

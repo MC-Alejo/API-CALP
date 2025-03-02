@@ -1,5 +1,11 @@
 # Historial de Cambios
 
+## [2.2.6] - 2025-03-02
+
+### Added
+
+- Baja de depositos.
+
 ## [2.2.5] - 2024-12-01
 
 ### Added

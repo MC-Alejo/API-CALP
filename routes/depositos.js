@@ -13,7 +13,8 @@ const {
     obtenerDepositos,
     obtenerDepositosPorId,
     obtenerInventarioDeposito,
-    obtenerDepositoDeJefe
+    obtenerDepositoDeJefe,
+    bajaDeposito
 } = require('../controllers');
 
 
@@ -111,6 +112,17 @@ router.post('/:id', [
 
     validarCampos,
 ], agregarAInventario);
+
+// Baja de deposito
+router.delete('/:id', [
+    //VALIDACIONES DEL ENDPOINT
+    validarJWT,
+    esGerente,
+    check('id', 'El ID debe ser un numero').isNumeric(),
+    check('id', 'El ID debe ser un numero').isInt(),
+    check('id').custom(existeDepositoPorId),
+    validarCampos,
+], bajaDeposito);
 
 
 module.exports = router;

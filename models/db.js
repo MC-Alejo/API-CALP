@@ -327,6 +327,7 @@ class DataBase {
     ON depo.id = jefe.id_deposito
     LEFT JOIN usuario usuario
     ON jefe.id_usuario = usuario.id
+    WHERE depo.estado = true
     `;
     const resp = await this.client.query(text);
     return resp.rows;
@@ -341,7 +342,7 @@ class DataBase {
   }
 
   async getDepositoPorNombre(nombre) {
-    const text = "SELECT * FROM deposito WHERE nombre = $1";
+    const text = "SELECT * FROM deposito WHERE nombre = $1 AND estado = TRUE";
     const values = [nombre];
 
     const resp = await this.client.query(text, values);
@@ -379,6 +380,18 @@ class DataBase {
     const values = [id, nombre];
 
     const resp = await this.client.query(text, values);
+    return resp.rows[0];
+  }
+
+  async eliminarDeposito(id) {
+    const text = "UPDATE deposito SET estado = false WHERE id = $1 RETURNING *";
+    //quitar deposito al jefe
+    const text2 = "UPDATE jefe_mantenimiento SET id_deposito = NULL WHERE id_deposito = $1";
+    const values = [id];
+
+    const resp = await this.client.query(text, values);
+
+    await this.client.query(text2, values);
     return resp.rows[0];
   }
 
