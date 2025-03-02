@@ -62,7 +62,7 @@ const obtenerAreaPorIdUsuario = async (req, res) => {
         const db = new DataBase();
         
         const areaEA = await db.getAreaDelUsuario(id);
-        if (!areaEA || areaEA.estado === false) return res.status(404).json({});
+        if (!areaEA.id_area) return res.status(404).json({});
         const { nombre } = await db.getAreaPorId(areaEA.id_area);
         
         res.json({

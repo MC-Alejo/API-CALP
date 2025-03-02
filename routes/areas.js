@@ -1,7 +1,7 @@
 const { Router } = require('express');
 const { check } = require('express-validator');
 
-const { validarCampos, validarJWT, esJefeDeMantenimiento } = require('../middlewares');
+const { validarCampos, validarJWT, esJefeDeMantenimiento, esGerente } = require('../middlewares');
 
 const { existeAreaPorId, existeNombreArea } = require('../helpers');
 
@@ -61,7 +61,7 @@ router.get('/:id/sectores', [
 router.post('/', [
     //VALIDACIONES DEL ENDPOINT
     validarJWT,
-    esJefeDeMantenimiento,
+    esGerente,
     check('nombre', 'El nombre es obligatorio').not().isEmpty(),
     check('nombre', 'El nombre debe de tener mas de 3 caracteres').isLength({ min: 3 }),
     check('nombre', 'El nombre puede tener hasta 65 caracteres').isLength({ max: 65 }),
@@ -74,7 +74,7 @@ router.post('/', [
 router.put('/:id', [
     //VALIDACIONES DEL ENDPOINT
     validarJWT,
-    esJefeDeMantenimiento,
+    esGerente,
     check('id', 'El ID debe ser un numero').isNumeric(),
     check('id', 'El ID debe ser un numero').isInt(),
     check('id').custom(existeAreaPorId),
@@ -89,7 +89,7 @@ router.put('/:id', [
 router.delete('/:id', [
     //VALIDACIONES DEL ENDPOINT
     validarJWT,
-    esJefeDeMantenimiento,
+    esGerente,
     check('id', 'El ID debe ser un numero').isNumeric(),
     check('id', 'El ID debe ser un numero').isInt(),
     check('id').custom(existeAreaPorId),
@@ -100,7 +100,7 @@ router.delete('/:id', [
 router.post('/:id', [
     //VALIDACIONES DEL ENDPOINT
     validarJWT,
-    esJefeDeMantenimiento,
+    esGerente,
     check('id', 'El ID debe ser un numero').isNumeric(),
     check('id', 'El ID debe ser un numero').isInt(),
     check('id').custom(existeAreaPorId),

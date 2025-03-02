@@ -1,5 +1,11 @@
 # Historial de Cambios
 
+## [2.2.7] - 2025-03-02
+
+### Fixed
+
+- Error al buscar el area de un Encargado.
+
 ## [2.2.6] - 2025-03-02
 
 ### Added
