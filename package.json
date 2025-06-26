@@ -2,10 +2,10 @@
   "name": "calp-api",
   "version": "2.0.0",
   "description": "API del sistema de solicitudes-tareas CALP",
-  "main": "app.js",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node app.js"
+    "start": "node index.js"
   },
   "author": "",
   "license": "MIT",
