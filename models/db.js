@@ -16,6 +16,10 @@ class DataBase {
       password: process.env.PGPASSWORD,
       idleTimeoutMillis: 1,
       max: 50,
+      connectionString: process.env.DATABASE_URL,
+      ssl: {
+        rejectUnauthorized: false,
+      },
     });
 
     this.client.on("error", (err) => {
@@ -217,7 +221,8 @@ class DataBase {
   }
 
   async updateDepositoJefe(id, id_deposito) {
-    const text = "UPDATE jefe_mantenimiento SET id_deposito = $2 WHERE id_usuario = $1";
+    const text =
+      "UPDATE jefe_mantenimiento SET id_deposito = $2 WHERE id_usuario = $1";
     const values = [id, id_deposito];
 
     const resp = await this.client.query(text, values);
@@ -386,7 +391,8 @@ class DataBase {
   async eliminarDeposito(id) {
     const text = "UPDATE deposito SET estado = false WHERE id = $1 RETURNING *";
     //quitar deposito al jefe
-    const text2 = "UPDATE jefe_mantenimiento SET id_deposito = NULL WHERE id_deposito = $1";
+    const text2 =
+      "UPDATE jefe_mantenimiento SET id_deposito = NULL WHERE id_deposito = $1";
     const values = [id];
 
     const resp = await this.client.query(text, values);
@@ -752,14 +758,18 @@ class DataBase {
   }
 
   async getAlarma(id) {
-    const text = "SELECT * FROM tarea WHERE id = $1 AND date(fecha) > DATE(now())";
+    const text =
+      "SELECT * FROM tarea WHERE id = $1 AND date(fecha) > DATE(now())";
     const values = [id];
 
     const resp = await this.client.query(text, values);
     return resp.rows[0];
   }
 
-  async actualizarAlarma(id, { descripcion, prioridad, fecha, id_responsable }) {
+  async actualizarAlarma(
+    id,
+    { descripcion, prioridad, fecha, id_responsable }
+  ) {
     const setDescripcion = "UPDATE tarea SET descripcion = $1 WHERE id = $2";
     const setPrioridad = "UPDATE tarea SET prioridad = $1 WHERE id = $2";
     const setFecha = "UPDATE tarea SET fecha = $1 WHERE id = $2";
@@ -1232,7 +1242,8 @@ class DataBase {
   }
 
   async getTareaPorId(id) {
-    const text = "SELECT * FROM tarea WHERE id = $1 AND date(fecha) <= date(now())";
+    const text =
+      "SELECT * FROM tarea WHERE id = $1 AND date(fecha) <= date(now())";
     const values = [id];
 
     const resp = await this.client.query(text, values);
@@ -1282,13 +1293,14 @@ class DataBase {
     const text =
       "INSERT INTO inv_tar (id_tarea, id_inventario, cantidad_usada) VALUES ($1, $2, $3) RETURNING *";
     const values = [id_tarea, id_inventario, cantidad];
-    
-    const textUpdate = "UPDATE inventario SET stock = $1 WHERE id = $2 RETURNING *";
-    const valuesUpdate = [newStock, id_inventario]
-  
+
+    const textUpdate =
+      "UPDATE inventario SET stock = $1 WHERE id = $2 RETURNING *";
+    const valuesUpdate = [newStock, id_inventario];
+
     const resp = await this.client.query(text, values);
     await this.client.query(textUpdate, valuesUpdate);
-    
+
     return resp.rows[0];
   }
 
@@ -1296,13 +1308,14 @@ class DataBase {
     const text =
       "DELETE FROM inv_tar WHERE id_tarea = $1 AND id_inventario = $2";
     const values = [id_tarea, id_inventario];
-    
-    const textUpdate = "UPDATE inventario SET stock = $1 WHERE id = $2 RETURNING *";
-    const valuesUpdate = [newStock, id_inventario]
-  
+
+    const textUpdate =
+      "UPDATE inventario SET stock = $1 WHERE id = $2 RETURNING *";
+    const valuesUpdate = [newStock, id_inventario];
+
     const resp = await this.client.query(text, values);
     await this.client.query(textUpdate, valuesUpdate);
-    
+
     return resp.rows[0];
   }
 
